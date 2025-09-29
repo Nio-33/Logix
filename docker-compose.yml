@@ -1,0 +1,75 @@
+# Logix Platform - Development Docker Compose
+
+version: '3.8'
+
+services:
+  # Main API Service
+  api:
+    build: .
+    ports:
+      - "5000:8080"
+    environment:
+      - FLASK_ENV=development
+      - DEBUG=True
+      - REDIS_URL=redis://redis:6379/0
+    env_file:
+      - .env
+    volumes:
+      - ./backend:/app/backend
+      - ./logs:/app/logs
+    depends_on:
+      - redis
+    restart: unless-stopped
+    networks:
+      - logix-network
+
+  # Redis for caching and rate limiting
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    restart: unless-stopped
+    networks:
+      - logix-network
+
+  # Nginx reverse proxy (for production-like setup)
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./infrastructure/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./infrastructure/nginx/ssl:/etc/nginx/ssl
+      - ./frontend/dist:/usr/share/nginx/html
+    depends_on:
+      - api
+    restart: unless-stopped
+    networks:
+      - logix-network
+
+  # PostgreSQL for local development (optional)
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: logix_dev
+      POSTGRES_USER: logix
+      POSTGRES_PASSWORD: logix123
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - logix-network
+
+volumes:
+  redis_data:
+  postgres_data:
+
+networks:
+  logix-network:
+    driver: bridge

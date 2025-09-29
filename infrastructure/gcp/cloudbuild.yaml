@@ -1,0 +1,62 @@
+# Google Cloud Build Configuration for Logix Platform
+
+steps:
+  # Build the container image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [
+      'build',
+      '-t', 'gcr.io/$PROJECT_ID/logix-api:$COMMIT_SHA',
+      '-t', 'gcr.io/$PROJECT_ID/logix-api:latest',
+      '.'
+    ]
+
+  # Push the container image to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/logix-api:$COMMIT_SHA']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/logix-api:latest']
+
+  # Deploy to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args: [
+      'run', 'deploy', 'logix-api',
+      '--image', 'gcr.io/$PROJECT_ID/logix-api:$COMMIT_SHA',
+      '--region', 'us-central1',
+      '--platform', 'managed',
+      '--allow-unauthenticated',
+      '--memory', '1Gi',
+      '--cpu', '1',
+      '--concurrency', '100',
+      '--max-instances', '10',
+      '--min-instances', '1',
+      '--port', '8080',
+      '--set-env-vars', 'ENVIRONMENT=production',
+      '--set-secrets', '/secrets/env=logix-env-secrets:latest'
+    ]
+
+  # Update traffic to new revision
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args: [
+      'run', 'services', 'update-traffic', 'logix-api',
+      '--to-latest',
+      '--region', 'us-central1'
+    ]
+
+# Configure build options
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: 'E2_HIGHCPU_8'
+
+# Store build logs in Cloud Storage
+logsBucket: 'gs://${PROJECT_ID}-build-logs'
+
+# Configure timeout
+timeout: 1200s
+
+# Substitute variables
+substitutions:
+  _SERVICE_NAME: logix-api
+  _REGION: us-central1

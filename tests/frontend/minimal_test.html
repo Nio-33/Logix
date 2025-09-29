@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minimal Chart Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .chart { width: 600px; height: 300px; margin: 20px auto; }
+        .status { text-align: center; margin: 10px; padding: 10px; background: #e8f5e8; }
+    </style>
+</head>
+<body>
+    <h1>Minimal Chart Test - Should NOT Drop</h1>
+    <div class="status" id="status">Loading...</div>
+    <div class="chart">
+        <canvas id="testChart"></canvas>
+    </div>
+
+    <script>
+        const data = [18, 22, 15, 28, 25, 20, 24];
+        let chart = null;
+        
+        function createChart() {
+            const ctx = document.getElementById('testChart');
+            if (!ctx) return;
+            
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Orders',
+                        data: data,
+                        borderColor: 'rgb(59, 130, 246)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: { duration: 0 },
+                    scales: { y: { beginAtZero: true, max: 35 } }
+                }
+            });
+            
+            document.getElementById('status').textContent = 'Chart created - Data: ' + JSON.stringify(data);
+        }
+        
+        // Create chart immediately
+        createChart();
+        
+        // Test: Check data every 2 seconds for 10 seconds
+        let testCount = 0;
+        const testInterval = setInterval(() => {
+            testCount++;
+            if (chart) {
+                const currentData = chart.data.datasets[0].data;
+                const isStable = JSON.stringify(currentData) === JSON.stringify(data);
+                document.getElementById('status').textContent = 
+                    `Test ${testCount}/5 - Data stable: ${isStable} - Current: ${JSON.stringify(currentData)}`;
+            }
+            
+            if (testCount >= 5) {
+                clearInterval(testInterval);
+                document.getElementById('status').textContent += ' - TEST COMPLETE';
+            }
+        }, 2000);
+    </script>
+</body>
+</html>

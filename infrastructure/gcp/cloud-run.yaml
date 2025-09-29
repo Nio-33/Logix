@@ -1,0 +1,113 @@
+# Cloud Run Service Configuration for Logix Platform
+
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: logix-api
+  namespace: logix-prod
+  annotations:
+    run.googleapis.com/ingress: all
+    run.googleapis.com/ingress-status: all
+  labels:
+    app: logix-api
+    environment: production
+spec:
+  template:
+    metadata:
+      annotations:
+        # Scaling configuration
+        autoscaling.knative.dev/minScale: "1"
+        autoscaling.knative.dev/maxScale: "100"
+        
+        # Resource allocation
+        run.googleapis.com/memory: "1Gi"
+        run.googleapis.com/cpu: "1000m"
+        
+        # Network configuration
+        run.googleapis.com/vpc-access-connector: logix-vpc-connector
+        run.googleapis.com/vpc-access-egress: private-ranges-only
+        
+        # Security
+        run.googleapis.com/execution-environment: gen2
+        run.googleapis.com/sandbox: gvisor
+        
+      labels:
+        app: logix-api
+        version: v1
+    spec:
+      containerConcurrency: 100
+      timeoutSeconds: 900
+      serviceAccountName: logix-api-service-account
+      
+      containers:
+      - image: gcr.io/PROJECT_ID/logix-api:latest
+        name: logix-api
+        
+        ports:
+        - containerPort: 8080
+          name: http1
+          
+        env:
+        - name: ENVIRONMENT
+          value: "production"
+        - name: PORT
+          value: "8080"
+        - name: GOOGLE_CLOUD_PROJECT
+          value: "PROJECT_ID"
+        - name: REDIS_URL
+          valueFrom:
+            secretKeyRef:
+              name: logix-secrets
+              key: redis-url
+              
+        # Resource requests and limits
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+            
+        # Health checks
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 3
+          
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+
+        # Startup probe
+        startupProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 30
+          
+        # Security context
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+          readOnlyRootFilesystem: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+
+  traffic:
+  - percent: 100
+    latestRevision: true
