@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect"/>
+<link as="style" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Inter%3Awght%40400%3B500%3B700%3B900&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900" onload="this.rel='stylesheet'" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#044595",
+              "background-light": "#f5f7f8",
+              "background-dark": "#0f1823",
+            },
+            fontFamily: {
+              display: ["Inter"],
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+<title>Logix - Routes</title>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark">
+<div class="flex min-h-screen w-full flex-col">
+<header class="flex items-center justify-between whitespace-nowrap border-b border-primary/10 px-6 py-3">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-2 text-background-dark dark:text-background-light">
+<span class="material-symbols-outlined text-primary text-3xl">
+              route
+            </span>
+<h1 class="text-background-dark dark:text-background-light text-xl font-bold">
+              Logix
+            </h1>
+</div>
+<nav class="hidden items-center gap-6 md:flex">
+<a class="text-sm font-medium text-background-dark/60 dark:text-background-light/60 hover:text-primary" href="/admin">Dashboard</a>
+<a class="text-sm font-medium text-background-dark/60 dark:text-background-light/60 hover:text-primary" href="/admin/orders">Orders</a>
+<a class="text-sm font-medium text-background-dark/60 dark:text-background-light/60 hover:text-primary" href="/admin/inventory">Inventory</a>
+<a class="text-sm font-bold text-primary dark:text-primary" href="/admin/routes">Routes</a>
+<a class="text-sm font-medium text-background-dark/60 dark:text-background-light/60 hover:text-primary" href="/admin/customers">Customers</a>
+<a class="text-sm font-medium text-background-dark/60 dark:text-background-light/60 hover:text-primary" href="/admin/reports">Reports</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex items-center justify-center rounded-full size-10 bg-primary/10 text-primary hover:bg-primary/20">
+<span class="material-symbols-outlined"> search </span>
+</button>
+<button class="flex items-center justify-center rounded-full size-10 bg-primary/10 text-primary hover:bg-primary/20">
+<span class="material-symbols-outlined"> notifications </span>
+</button>
+<div class="size-10 rounded-full bg-cover bg-center" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuChB6xVyoRvZUPT5TGYOMl66Cd6z2QTmahdVWM30Wl5bFGWuc1EU2fiBg-Uw28q7pM5O85kfNsw3haEvQpMx4p56MfoD5CHuepL_QC734wfj04MBHM7_km5pZAJ-wrALzaC_i9uua6xiETTS8Twsqb3OxD-Xt0D1LaoloNcB8wgBx0waH5LhpoHG-rlOR_vOZvv2i91wTC4DmphUT7lkGuEab2SAZropk9nV2qNQz_hnV4Kz27duBt1H6TVvlTiqtuywS8Wp6nUYRXX");'></div>
+</div>
+</header>
+<main class="flex flex-1">
+<div class="flex w-96 flex-col border-r border-primary/10 bg-background-light dark:bg-background-dark">
+<div class="p-4">
+<h2 class="text-2xl font-bold text-background-dark dark:text-background-light px-2">
+              Routes
+            </h2>
+<div class="relative mt-4">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-background-dark/40 dark:text-background-light/40">
+                search
+              </span>
+<input class="w-full rounded-lg border-primary/20 bg-background-light dark:bg-background-dark py-2 pl-10 pr-4 text-background-dark dark:text-background-light placeholder-background-dark/40 dark:placeholder-background-light/40 focus:border-primary focus:ring-primary" placeholder="Search routes" type="text"/>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto">
+<ul class="divide-y divide-primary/10">
+<li class="flex cursor-pointer items-center justify-between p-4 hover:bg-primary/5 dark:hover:bg-primary/10">
+<div>
+<p class="font-semibold text-background-dark dark:text-background-light">
+                    Route 1
+                  </p>
+<p class="text-sm text-background-dark/60 dark:text-background-light/60">
+                    123 Main St, Anytown
+                  </p>
+</div>
+<span class="rounded-full bg-green-500/20 px-2 py-1 text-xs font-semibold text-green-700">Active</span>
+</li>
+<li class="flex cursor-pointer items-center justify-between p-4 hover:bg-primary/5 dark:hover:bg-primary/10">
+<div>
+<p class="font-semibold text-background-dark dark:text-background-light">
+                    Route 2
+                  </p>
+<p class="text-sm text-background-dark/60 dark:text-background-light/60">
+                    456 Oak Ave, Anytown
+                  </p>
+</div>
+<span class="rounded-full bg-blue-500/20 px-2 py-1 text-xs font-semibold text-blue-700">Completed</span>
+</li>
+<li class="flex cursor-pointer items-center justify-between p-4 hover:bg-primary/5 dark:hover:bg-primary/10">
+<div>
+<p class="font-semibold text-background-dark dark:text-background-light">
+                    Route 3
+                  </p>
+<p class="text-sm text-background-dark/60 dark:text-background-light/60">
+                    789 Pine Ln, Anytown
+                  </p>
+</div>
+<span class="rounded-full bg-yellow-500/20 px-2 py-1 text-xs font-semibold text-yellow-700">Scheduled</span>
+</li>
+</ul>
+</div>
+<div class="p-4">
+<button class="flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-3 font-semibold text-white transition-opacity hover:opacity-90">
+<span class="material-symbols-outlined"> add </span>
+<span>Create Route</span>
+</button>
+</div>
+</div>
+<div class="relative flex-1">
+<div class="absolute inset-0 bg-cover bg-center" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCA_OApsMeNPW0qCnfYqdePTAXck7-fBh8dhnY-dacBRFzp8RAmr-NX2tvjMXTTwDYD7EKok7UZgQl3YlY6mVneN9bbRz0RIty6tXciqyHN0s6pOIJCOlpXMazp9xmyLYFxPxNyKdE8MGgTSQhJMl2OgloB1KeWFW_nO8E012D0KsJMI2-Ne0OPs1Fh_x2Uk3pOoRhMgfNOv0sB_g_SDsMIWVBeThcT7NpZaJt2Hw38H8g13Wmr1giTobGd1qseMQUve1G9d0AXEou8");'></div>
+<div class="absolute inset-0 bg-black/10"></div>
+<div class="relative flex h-full flex-col justify-between p-4 sm:p-6">
+<div class="flex items-center justify-between">
+<div class="relative w-full max-w-sm">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-background-dark/60">
+                  search
+                </span>
+<input class="w-full rounded-lg border-none bg-background-light/80 py-3 pl-10 pr-4 text-background-dark placeholder-background-dark/60 shadow-lg backdrop-blur-sm focus:ring-2 focus:ring-primary dark:bg-background-dark/80 dark:text-background-light dark:placeholder-background-light/60" placeholder="Search location" type="text"/>
+</div>
+<button class="flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 font-semibold text-white shadow-lg transition-opacity hover:opacity-90">
+<span class="material-symbols-outlined"> add </span>
+<span class="hidden sm:inline">New Route</span>
+</button>
+</div>
+<div class="flex items-end justify-end gap-4">
+<div class="flex flex-col gap-1 rounded-lg bg-background-light/80 shadow-lg backdrop-blur-sm dark:bg-background-dark/80">
+<button class="flex size-12 items-center justify-center text-background-dark hover:bg-primary/10 dark:text-background-light dark:hover:bg-primary/20 rounded-t-lg">
+<span class="material-symbols-outlined"> add </span>
+</button>
+<button class="flex size-12 items-center justify-center text-background-dark hover:bg-primary/10 dark:text-background-light dark:hover:bg-primary/20 rounded-b-lg">
+<span class="material-symbols-outlined"> remove </span>
+</button>
+</div>
+<button class="flex size-12 items-center justify-center rounded-lg bg-background-light/80 text-background-dark shadow-lg backdrop-blur-sm hover:bg-primary/10 dark:bg-background-dark/80 dark:text-background-light dark:hover:bg-primary/20">
+<span class="material-symbols-outlined"> my_location </span>
+</button>
+</div>
+</div>
+</div>
+</main>
+</div>
+
+<script>
+  // Route search functionality
+  document.addEventListener('DOMContentLoaded', function() {
+    const routeSearchInput = document.querySelector('input[placeholder="Search routes"]');
+    const locationSearchInput = document.querySelector('input[placeholder="Search location"]');
+    
+    // Route search functionality
+    if (routeSearchInput) {
+      routeSearchInput.addEventListener('input', function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        const routeItems = document.querySelectorAll('ul li');
+        
+        routeItems.forEach(item => {
+          const routeName = item.querySelector('p').textContent.toLowerCase();
+          const routeAddress = item.querySelector('p + p').textContent.toLowerCase();
+          
+          if (routeName.includes(searchTerm) || routeAddress.includes(searchTerm)) {
+            item.style.display = 'flex';
+          } else {
+            item.style.display = 'none';
+          }
+        });
+      });
+    }
+    
+    // Location search functionality
+    if (locationSearchInput) {
+      locationSearchInput.addEventListener('input', function(e) {
+        // This would integrate with a map service like Google Maps or Mapbox
+        console.log('Searching for location:', e.target.value);
+      });
+    }
+    
+    // Create Route button functionality
+    const createRouteButtons = document.querySelectorAll('button');
+    createRouteButtons.forEach(button => {
+      if (button.textContent.includes('Create Route') || button.textContent.includes('New Route')) {
+        button.addEventListener('click', function() {
+          alert('Create Route functionality would be implemented here');
+        });
+      }
+    });
+    
+    // Map controls functionality
+    const zoomInButton = document.querySelector('button .material-symbols-outlined');
+    const zoomOutButton = document.querySelectorAll('button .material-symbols-outlined')[1];
+    const locationButton = document.querySelector('button .material-symbols-outlined:last-child');
+    
+    if (zoomInButton && zoomInButton.textContent.trim() === 'add') {
+      zoomInButton.parentElement.addEventListener('click', function() {
+        console.log('Zoom in');
+      });
+    }
+    
+    if (zoomOutButton && zoomOutButton.textContent.trim() === 'remove') {
+      zoomOutButton.parentElement.addEventListener('click', function() {
+        console.log('Zoom out');
+      });
+    }
+    
+    if (locationButton && locationButton.textContent.trim() === 'my_location') {
+      locationButton.parentElement.addEventListener('click', function() {
+        console.log('Center on location');
+      });
+    }
+  });
+</script>
+
+</body></html>

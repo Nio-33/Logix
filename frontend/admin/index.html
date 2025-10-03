@@ -1,329 +1,189 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Logix Admin Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Logix Dashboard</title>
+<link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect"/>
+<link as="style" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Inter:wght@400;500;700;900" onload="this.rel='stylesheet'" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#044595",
+            "background-light": "#f5f7f8",
+            "background-dark": "#0f1823",
+          },
+          fontFamily: {
+            "display": ["Inter"]
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+        },
+      },
+    }
+  </script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
 </head>
-<body class="bg-gray-50" x-data="logixDashboard()">
-    <!-- Navigation Header -->
-    <nav class="bg-blue-600 text-white shadow-lg">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center">
-                    <h1 class="text-xl font-bold">🚚 Logix Admin Dashboard</h1>
-                </div>
-                
-                <div class="flex items-center space-x-4">
-                    <!-- Notifications -->
-                    <div class="relative">
-                        <button class="p-2 rounded-md hover:bg-blue-700 transition-colors">
-                            <i class="fas fa-bell"></i>
-                            <span class="absolute -top-1 -right-1 bg-red-500 text-xs rounded-full h-5 w-5 flex items-center justify-center" x-text="notifications.length"></span>
-                        </button>
-                    </div>
-                    
-                    <!-- User menu -->
-                    <div class="flex items-center space-x-2 p-2 rounded-md hover:bg-blue-700 transition-colors">
-                        <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">
-                            A
-                        </div>
-                        <span>Admin User</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </nav>
+<body class="bg-background-light dark:bg-background-dark font-display">
+<div class="flex min-h-screen">
+<aside class="w-64 bg-background-light dark:bg-background-dark border-r border-gray-200 dark:border-gray-800 flex flex-col">
+<div class="flex items-center gap-3 p-6">
+<div class="w-8 h-8 text-primary">
+<svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M44 11.2727C44 14.0109 39.8386 16.3957 33.69 17.6364C39.8386 18.877 44 21.2618 44 24C44 26.7382 39.8386 29.123 33.69 30.3636C39.8386 31.6043 44 33.9891 44 36.7273C44 40.7439 35.0457 44 24 44C12.9543 44 4 40.7439 4 36.7273C4 33.9891 8.16144 31.6043 14.31 30.3636C8.16144 29.123 4 26.7382 4 24C4 21.2618 8.16144 18.877 14.31 17.6364C8.16144 16.3957 4 14.0109 4 11.2727C4 7.25611 12.9543 4 24 4C35.0457 4 44 7.25611 44 11.2727Z" fill="currentColor"></path>
+</svg>
+</div>
+<h1 class="text-xl font-bold text-gray-900 dark:text-white">Logix</h1>
+</div>
+<nav class="flex-1 px-4 py-4 space-y-2">
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg bg-primary text-white font-medium" href="/admin">
+<span class="material-symbols-outlined">dashboard</span>
+          Dashboard
+        </a>
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-primary/10 dark:hover:bg-primary/20 font-medium" href="/admin/orders">
+<span class="material-symbols-outlined">package_2</span>
+          Orders
+        </a>
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-primary/10 dark:hover:bg-primary/20 font-medium" href="/admin/inventory">
+<span class="material-symbols-outlined">warehouse</span>
+          Inventory
+        </a>
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-primary/10 dark:hover:bg-primary/20 font-medium" href="/admin/routes">
+<span class="material-symbols-outlined">map</span>
+          Routes
+        </a>
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-primary/10 dark:hover:bg-primary/20 font-medium" href="/admin/analytics">
+<span class="material-symbols-outlined">monitoring</span>
+          Analytics
+        </a>
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-primary/10 dark:hover:bg-primary/20 font-medium" href="/admin/users">
+<span class="material-symbols-outlined">group</span>
+          Users
+        </a>
+</nav>
+<div class="px-4 py-4">
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-primary/10 dark:hover:bg-primary/20 font-medium" href="#">
+<span class="material-symbols-outlined">settings</span>
+          Settings
+        </a>
+</div>
+</aside>
+<div class="flex-1 flex flex-col">
+<header class="flex items-center justify-end h-16 px-6 bg-background-light dark:bg-background-dark border-b border-gray-200 dark:border-gray-800">
+<div class="flex items-center gap-4">
+<button class="relative text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full"></span>
+</button>
+<div class="w-10 h-10 bg-center bg-no-repeat bg-cover rounded-full" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAoY_LeVqkHngNlltFp_1UZ3vSQmkAdYW6lUUd_bNe4XyaJMLexoWuNIfHCwWe_JXLZcwEZ3ESXuSHuRCd9rPz1VMi5ZFOqSXSfKG3eQkukViPU-be0W24hM1hdVgVWbuJjX0gJFPpvMW33-a5GHvDbCtC92vEB6uTyXzbHNo4e6CmNW49rFok28174tqKadowfcYO2nTPPvN_SSZ-VO6Fco7OacqXMc1UNFw_plx2r65m2YZWlprzR5PdXc0Ma9-xBAuhNXcGgI8KO");'></div>
+</div>
+</header>
+<main class="flex-1 p-6">
+<h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">Dashboard</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<div class="bg-white dark:bg-gray-800/50 p-6 rounded-xl">
+<p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Orders</p>
+<p class="text-3xl font-bold text-gray-900 dark:text-white mt-1" id="kpi-total-orders">—</p>
+</div>
+<div class="bg-white dark:bg-gray-800/50 p-6 rounded-xl">
+<p class="text-sm font-medium text-gray-500 dark:text-gray-400">Deliveries Today</p>
+<p class="text-3xl font-bold text-gray-900 dark:text-white mt-1" id="kpi-deliveries-today">—</p>
+</div>
+<div class="bg-white dark:bg-gray-800/50 p-6 rounded-xl">
+<p class="text-sm font-medium text-gray-500 dark:text-gray-400">Avg Delivery Time</p>
+<p class="text-3xl font-bold text-gray-900 dark:text-white mt-1" id="kpi-avg-delivery-time">—</p>
+</div>
+<div class="bg-white dark:bg-gray-800/50 p-6 rounded-xl">
+<p class="text-sm font-medium text-gray-500 dark:text-gray-400">Customer Rating</p>
+<p class="text-3xl font-bold text-gray-900 dark:text-white mt-1" id="kpi-customer-rating">—</p>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-5 gap-6 mt-6">
+<div class="lg:col-span-3 bg-white dark:bg-gray-800/50 p-6 rounded-xl">
+<div class="flex justify-between items-start">
+<div>
+<p class="text-base font-medium text-gray-900 dark:text-white">Order Trends</p>
+<p class="text-sm text-gray-500 dark:text-gray-400">Last 30 Days</p>
+</div>
+<div class="flex items-center gap-1 text-green-500">
+<span class="material-symbols-outlined text-base">arrow_upward</span>
+<span class="text-sm font-semibold">+12%</span>
+</div>
+</div>
+<div class="h-64 mt-4">
+<svg fill="none" height="100%" preserveAspectRatio="none" viewBox="0 0 472 150" width="100%" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 109C18.1538 109 18.1538 21 36.3077 21C54.4615 21 54.4615 41 72.6154 41C90.7692 41 90.7692 93 108.923 93C127.077 93 127.077 33 145.231 33C163.385 33 163.385 101 181.538 101C199.692 101 199.692 61 217.846 61C236 61 236 45 254.154 45C272.308 45 272.308 121 290.462 121C308.615 121 308.615 149 326.769 149C344.923 149 344.923 1 363.077 1C381.231 1 381.231 81 399.385 81C417.538 81 417.538 129 435.692 129C453.846 129 453.846 25 472 25" stroke="#044595" stroke-linecap="round" stroke-width="3"></path>
+<path d="M0 109C18.1538 109 18.1538 21 36.3077 21C54.4615 21 54.4615 41 72.6154 41C90.7692 41 90.7692 93 108.923 93C127.077 93 127.077 33 145.231 33C163.385 33 163.385 101 181.538 101C199.692 101 199.692 61 217.846 61C236 61 236 45 254.154 45C272.308 45 272.308 121 290.462 121C308.615 121 308.615 149 326.769 149C344.923 149 344.923 1 363.077 1C381.231 1 381.231 81 399.385 81C417.538 81 417.538 129 435.692 129C453.846 129 453.846 25 472 25V149H0V109Z" fill="url(#paint0_linear_1_2)"></path>
+<defs>
+<linearGradient gradientUnits="userSpaceOnUse" id="paint0_linear_1_2" x1="236" x2="236" y1="1" y2="149">
+<stop stop-color="#044595" stop-opacity="0.2"></stop>
+<stop offset="1" stop-color="#044595" stop-opacity="0"></stop>
+</linearGradient>
+</defs>
+</svg>
+</div>
+</div>
+<div class="lg:col-span-2 bg-white dark:bg-gray-800/50 p-6 rounded-xl">
+<div class="flex justify-between items-start">
+<div>
+<p class="text-base font-medium text-gray-900 dark:text-white">Delivery Performance</p>
+<p class="text-sm text-gray-500 dark:text-gray-400">On-time vs Late</p>
+</div>
+</div>
+<div class="flex justify-center items-center h-64 mt-4">
+<div class="relative w-48 h-48">
+<svg class="w-full h-full" viewBox="0 0 36 36">
+<path class="stroke-primary/20" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="3"></path>
+<path class="stroke-primary" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831" fill="none" stroke-dasharray="85, 100" stroke-dashoffset="-25" stroke-width="3"></path>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-2xl font-bold text-gray-900 dark:text-white" id="metric-on-time">95%</span>
+<span class="text-sm text-gray-500 dark:text-gray-400">On-time</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
 
-    <div class="flex">
-        <!-- Sidebar -->
-        <div class="w-64 bg-white shadow-lg min-h-screen">
-            <nav class="mt-5 px-2">
-                <a href="#" @click="currentTab = 'dashboard'" 
-                   :class="currentTab === 'dashboard' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-50'"
-                   class="group flex items-center px-2 py-2 text-sm font-medium rounded-md mb-1">
-                    <i class="fas fa-tachometer-alt mr-3"></i>
-                    Dashboard
-                </a>
-                <a href="#" @click="currentTab = 'orders'" 
-                   :class="currentTab === 'orders' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-50'"
-                   class="group flex items-center px-2 py-2 text-sm font-medium rounded-md mb-1">
-                    <i class="fas fa-shopping-cart mr-3"></i>
-                    Orders
-                </a>
-                <a href="#" @click="currentTab = 'inventory'" 
-                   :class="currentTab === 'inventory' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-50'"
-                   class="group flex items-center px-2 py-2 text-sm font-medium rounded-md mb-1">
-                    <i class="fas fa-boxes mr-3"></i>
-                    Inventory
-                </a>
-                <a href="#" @click="currentTab = 'routes'" 
-                   :class="currentTab === 'routes' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-50'"
-                   class="group flex items-center px-2 py-2 text-sm font-medium rounded-md mb-1">
-                    <i class="fas fa-route mr-3"></i>
-                    Routes & Delivery
-                </a>
-                <a href="#" @click="currentTab = 'analytics'" 
-                   :class="currentTab === 'analytics' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-50'"
-                   class="group flex items-center px-2 py-2 text-sm font-medium rounded-md mb-1">
-                    <i class="fas fa-chart-bar mr-3"></i>
-                    Analytics
-                </a>
-                <a href="#" @click="currentTab = 'users'" 
-                   :class="currentTab === 'users' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-50'"
-                   class="group flex items-center px-2 py-2 text-sm font-medium rounded-md mb-1">
-                    <i class="fas fa-users mr-3"></i>
-                    Users
-                </a>
-                <a href="#" @click="currentTab = 'settings'" 
-                   :class="currentTab === 'settings' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-50'"
-                   class="group flex items-center px-2 py-2 text-sm font-medium rounded-md mb-1">
-                    <i class="fas fa-cog mr-3"></i>
-                    Settings
-                </a>
-            </nav>
-        </div>
+<script>
+  async function loadKpis() {
+    try {
+      const res = await fetch('/api/v1/analytics/kpis');
+      if (!res.ok) throw new Error('Failed to load KPIs');
+      const data = await res.json();
+      document.getElementById('kpi-total-orders').textContent = data.totalOrders ?? '—';
+      document.getElementById('kpi-deliveries-today').textContent = data.deliveriesToday ?? '—';
+      document.getElementById('kpi-avg-delivery-time').textContent = data.avgDeliveryTime ?? '—';
+      document.getElementById('kpi-customer-rating').textContent = data.customerRating ?? '—';
+    } catch (e) {
+      document.getElementById('kpi-total-orders').textContent = '1,234';
+      document.getElementById('kpi-deliveries-today').textContent = '56';
+      document.getElementById('kpi-avg-delivery-time').textContent = '2.5 hrs';
+      document.getElementById('kpi-customer-rating').textContent = '4.8/5';
+    }
+  }
+  window.addEventListener('DOMContentLoaded', loadKpis);
+  // Defensive navigation: ensure sidebar anchors navigate even if prevented by cached scripts
+  document.addEventListener('click', function(e){
+    const link = e.target.closest('a[href]');
+    if(!link) return;
+    const href = link.getAttribute('href');
+    if(href && (href === '/admin' || href.startsWith('/admin/'))){
+      e.preventDefault();
+      window.location.assign(href);
+    }
+  });
+</script>
+</body></html>
 
-        <!-- Main Content -->
-        <div class="flex-1 p-8">
-            <!-- Dashboard Tab -->
-            <div x-show="currentTab === 'dashboard'" class="space-y-8">
-                <h2 class="text-2xl font-bold text-gray-900">Dashboard Overview</h2>
-                
-                <!-- KPI Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div class="bg-white p-6 rounded-lg shadow">
-                        <div class="flex items-center">
-                            <div class="p-2 bg-blue-100 rounded-lg">
-                                <i class="fas fa-shopping-cart text-blue-600"></i>
-                            </div>
-                            <div class="ml-4">
-                                <p class="text-sm font-medium text-gray-600">Total Orders</p>
-                                <p class="text-2xl font-bold text-gray-900" x-text="kpis.totalOrders"></p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-white p-6 rounded-lg shadow">
-                        <div class="flex items-center">
-                            <div class="p-2 bg-green-100 rounded-lg">
-                                <i class="fas fa-truck text-green-600"></i>
-                            </div>
-                            <div class="ml-4">
-                                <p class="text-sm font-medium text-gray-600">Deliveries Today</p>
-                                <p class="text-2xl font-bold text-gray-900" x-text="kpis.deliveriesToday"></p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-white p-6 rounded-lg shadow">
-                        <div class="flex items-center">
-                            <div class="p-2 bg-yellow-100 rounded-lg">
-                                <i class="fas fa-clock text-yellow-600"></i>
-                            </div>
-                            <div class="ml-4">
-                                <p class="text-sm font-medium text-gray-600">Avg Delivery Time</p>
-                                <p class="text-2xl font-bold text-gray-900" x-text="kpis.avgDeliveryTime"></p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-white p-6 rounded-lg shadow">
-                        <div class="flex items-center">
-                            <div class="p-2 bg-purple-100 rounded-lg">
-                                <i class="fas fa-star text-purple-600"></i>
-                            </div>
-                            <div class="ml-4">
-                                <p class="text-sm font-medium text-gray-600">Customer Rating</p>
-                                <p class="text-2xl font-bold text-gray-900" x-text="kpis.customerRating"></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Charts -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div class="bg-white p-6 rounded-lg shadow">
-                        <h3 class="text-lg font-semibold mb-4">Order Trends</h3>
-                        <div class="h-64">
-                            <canvas id="orderChart"></canvas>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-white p-6 rounded-lg shadow">
-                        <h3 class="text-lg font-semibold mb-4">Delivery Performance</h3>
-                        <div class="h-64">
-                            <canvas id="deliveryChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Other tabs placeholder -->
-            <div x-show="currentTab !== 'dashboard'" class="text-center py-12">
-                <i class="fas fa-cog fa-spin text-4xl text-gray-400 mb-4"></i>
-                <h3 class="text-lg font-medium text-gray-900 mb-2" x-text="currentTab.charAt(0).toUpperCase() + currentTab.slice(1)"></h3>
-                <p class="text-gray-600">Coming soon...</p>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        function logixDashboard() {
-            return {
-                currentTab: 'dashboard',
-                loading: false,
-                
-                // Static KPI data
-                kpis: {
-                    totalOrders: 1247,
-                    deliveriesToday: 23,
-                    avgDeliveryTime: '2.4h',
-                    customerRating: '4.8'
-                },
-                
-                // Notifications
-                notifications: [
-                    { id: 1, message: 'Low stock alert: 5 items below reorder point', time: '2 minutes ago', type: 'warning' },
-                    { id: 2, message: 'New order #12345 received', time: '5 minutes ago', type: 'info' }
-                ],
-                
-                // Charts
-                orderChart: null,
-                deliveryChart: null,
-                chartsInitialized: false,
-                
-                init() {
-                    console.log('Initializing clean Logix Dashboard...');
-                    
-                    // Initialize charts after a short delay
-                    setTimeout(() => {
-                        this.initializeCharts();
-                    }, 500);
-                },
-                
-                initializeCharts() {
-                    if (this.chartsInitialized) {
-                        console.log('Charts already initialized');
-                        return;
-                    }
-                    
-                    console.log('Creating stable charts...');
-                    this.createOrderChart();
-                    this.createDeliveryChart();
-                    
-                    this.chartsInitialized = true;
-                    console.log('Charts created successfully');
-                },
-                
-                createOrderChart() {
-                    const ctx = document.getElementById('orderChart');
-                    if (!ctx) {
-                        console.error('Order chart canvas not found');
-                        return;
-                    }
-                    
-                    // Completely static data - never changes
-                    const orderData = [18, 22, 15, 28, 25, 20, 24];
-                    
-                    try {
-                        this.orderChart = new Chart(ctx, {
-                            type: 'line',
-                            data: {
-                                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                                datasets: [{
-                                    label: 'Orders',
-                                    data: orderData,
-                                    borderColor: 'rgb(59, 130, 246)',
-                                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                                    tension: 0.4,
-                                    fill: true,
-                                    pointBackgroundColor: 'rgb(59, 130, 246)',
-                                    pointBorderColor: 'white',
-                                    pointBorderWidth: 2,
-                                    pointRadius: 5
-                                }]
-                            },
-                            options: {
-                                responsive: true,
-                                maintainAspectRatio: false,
-                                plugins: {
-                                    legend: {
-                                        display: false
-                                    }
-                                },
-                                scales: {
-                                    y: {
-                                        beginAtZero: true,
-                                        max: 35,
-                                        grid: {
-                                            color: 'rgba(0,0,0,0.1)'
-                                        }
-                                    },
-                                    x: {
-                                        grid: {
-                                            color: 'rgba(0,0,0,0.1)'
-                                        }
-                                    }
-                                },
-                                animation: {
-                                    duration: 0 // No animation
-                                }
-                            }
-                        });
-                        
-                        console.log('Order chart created with stable data:', orderData);
-                    } catch (error) {
-                        console.error('Error creating order chart:', error);
-                    }
-                },
-                
-                createDeliveryChart() {
-                    const ctx = document.getElementById('deliveryChart');
-                    if (!ctx) {
-                        console.error('Delivery chart canvas not found');
-                        return;
-                    }
-                    
-                    try {
-                        this.deliveryChart = new Chart(ctx, {
-                            type: 'doughnut',
-                            data: {
-                                labels: ['On Time', 'Delayed', 'Failed'],
-                                datasets: [{
-                                    data: [85, 12, 3],
-                                    backgroundColor: [
-                                        'rgb(34, 197, 94)',
-                                        'rgb(251, 191, 36)',
-                                        'rgb(239, 68, 68)'
-                                    ]
-                                }]
-                            },
-                            options: {
-                                responsive: true,
-                                maintainAspectRatio: false,
-                                plugins: {
-                                    legend: {
-                                        position: 'bottom'
-                                    }
-                                },
-                                animation: {
-                                    duration: 0
-                                }
-                            }
-                        });
-                        
-                        console.log('Delivery chart created');
-                    } catch (error) {
-                        console.error('Error creating delivery chart:', error);
-                    }
-                }
-            }
-        }
-    </script>
-</body>
-</html>

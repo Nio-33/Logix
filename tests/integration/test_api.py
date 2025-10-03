@@ -79,7 +79,8 @@ class TestDashboard:
         response = client.get('/')
         assert response.status_code == 200
         assert 'text/html' in response.content_type
-        assert b'Logix Admin Dashboard' in response.data
+        # New UI headline uses "Dashboard" title
+        assert b'Dashboard' in response.data
     
     def test_favicon_handling(self, client):
         """Test favicon endpoint"""

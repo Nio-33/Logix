@@ -2,11 +2,13 @@
 Integration tests for the main application
 """
 
+import os
 import pytest
 import requests
 import json
 
-BASE_URL = "http://127.0.0.1:5002"
+# Use PORT env (defaults to dev 5000) so tests hit the active server
+BASE_URL = f"http://127.0.0.1:{int(os.getenv('PORT', 5000))}"
 
 class TestApplicationIntegration:
     """Test application integration with external requests"""
@@ -35,7 +37,7 @@ class TestApplicationIntegration:
         response = requests.get(f"{BASE_URL}/", timeout=5)
         assert response.status_code == 200
         assert 'text/html' in response.headers.get('content-type', '')
-        assert 'Logix Admin Dashboard' in response.text
+        assert 'Dashboard' in response.text
     
     def test_demo_endpoints_external(self):
         """Test demo endpoints with external requests"""
