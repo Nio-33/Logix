@@ -12,7 +12,8 @@ class AnalyticsService:
     """Analytics and reporting service"""
 
     def __init__(self):
-        pass
+        """Initialize analytics service"""
+        self.logger = logging.getLogger(__name__)
 
     def get_kpis(self) -> Dict[str, Any]:
         """Get key performance indicators"""

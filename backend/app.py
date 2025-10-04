@@ -348,6 +348,42 @@ def create_app(config_name="development"):
         except Exception as e:
             return f"<html><body><h1>Users</h1><p>Error loading users page: {e}</p></body></html>"
 
+    # Serve settings page
+    @app.route("/admin/settings")
+    def admin_settings():
+        """Serve the admin settings page"""
+        try:
+            import os
+
+            frontend_path = os.path.join(
+                os.path.dirname(os.path.dirname(__file__)),
+                "frontend",
+                "admin",
+                "settings.html",
+            )
+            with open(frontend_path, "r") as f:
+                return f.read()
+        except Exception as e:
+            return f"<html><body><h1>Settings</h1><p>Error loading settings page: {e}</p></body></html>"
+
+    # Serve profile page
+    @app.route("/admin/profile")
+    def admin_profile():
+        """Serve the admin profile page"""
+        try:
+            import os
+
+            frontend_path = os.path.join(
+                os.path.dirname(os.path.dirname(__file__)),
+                "frontend",
+                "admin",
+                "profile.html",
+            )
+            with open(frontend_path, "r") as f:
+                return f.read()
+        except Exception as e:
+            return f"<html><body><h1>Profile</h1><p>Error loading profile page: {e}</p></body></html>"
+
     # Serve JavaScript files
     @app.route("/js/<path:filename>")
     def serve_js(filename):

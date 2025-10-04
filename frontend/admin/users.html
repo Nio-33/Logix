@@ -1,225 +1,455 @@
 <!DOCTYPE html>
-<html lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Logix User Management</title>
-<link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect"/>
-<link as="style" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Inter:wght@400;500;700;900" onload="this.rel='stylesheet'" rel="stylesheet"/>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<script>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management - Logix</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
         tailwind.config = {
             darkMode: "class",
             theme: {
                 extend: {
                     colors: {
-                        "primary": "#044595",
-                        "background-light": "#f5f7f8",
-                        "background-dark": "#0f1823",
+                        "primary": "#044595"
                     },
                     fontFamily: {
-                        "display": ["Inter"]
-                    },
-                    borderRadius: {
-                        "DEFAULT": "0.25rem",
-                        "lg": "0.5rem",
-                        "xl": "0.75rem",
-                        "full": "9999px"
-                    },
+                        "display": ["Inter", "sans-serif"]
+                    }
                 },
             },
         }
     </script>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
 </head>
-<body class="bg-background-light dark:bg-background-dark font-display">
-<div class="flex min-h-screen">
-<aside class="w-64 bg-background-light dark:bg-background-dark border-r border-gray-200 dark:border-gray-800 flex flex-col">
-<div class="flex items-center gap-3 p-6">
-<div class="w-8 h-8 text-primary">
-<svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-<path d="M44 11.2727C44 14.0109 39.8386 16.3957 33.69 17.6364C39.8386 18.877 44 21.2618 44 24C44 26.7382 39.8386 29.123 33.69 30.3636C39.8386 31.6043 44 33.9891 44 36.7273C44 40.7439 35.0457 44 24 44C12.9543 44 4 40.7439 4 36.7273C4 33.9891 8.16144 31.6043 14.31 30.3636C8.16144 29.123 4 26.7382 4 24C4 21.2618 8.16144 18.877 14.31 17.6364C8.16144 16.3957 4 14.0109 4 11.2727C4 7.25611 12.9543 4 24 4C35.0457 4 44 7.25611 44 11.2727Z" fill="currentColor"></path>
-</svg>
-</div>
-<h1 class="text-xl font-bold text-gray-900 dark:text-white">Logix</h1>
-</div>
-<nav class="flex-1 px-4 py-4 space-y-2">
-<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-primary/10 dark:hover:bg-primary/20 font-medium" href="/admin">
-<span class="material-symbols-outlined">dashboard</span> Dashboard
-            </a>
-<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-primary/10 dark:hover:bg-primary/20 font-medium" href="/admin/orders">
-<span class="material-symbols-outlined">package_2</span> Orders
-            </a>
-<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-primary/10 dark:hover:bg-primary/20 font-medium" href="/admin/inventory">
-<span class="material-symbols-outlined">warehouse</span> Inventory
-            </a>
-<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-primary/10 dark:hover:bg-primary/20 font-medium" href="/admin/routes">
-<span class="material-symbols-outlined">map</span> Routes
-            </a>
-<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-primary/10 dark:hover:bg-primary/20 font-medium" href="/admin/analytics">
-<span class="material-symbols-outlined">monitoring</span> Analytics
-            </a>
-<a class="flex items-center gap-3 px-4 py-2 rounded-lg bg-primary text-white font-medium" href="/admin/users">
-<span class="material-symbols-outlined">group</span> Users
-            </a>
-</nav>
-<div class="px-4 py-4">
-<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-primary/10 dark:hover:bg-primary/20 font-medium" href="/admin/settings">
-<span class="material-symbols-outlined">settings</span> Settings
-            </a>
-</div>
-</aside>
-<div class="flex-1 flex flex-col">
-<header class="flex items-center justify-between h-16 px-6 bg-background-light dark:bg-background-dark border-b border-gray-200 dark:border-gray-800">
-<h2 class="text-2xl font-bold text-gray-900 dark:text-white">User Management</h2>
-<div class="flex items-center gap-4">
-<button class="relative text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
-<span class="material-symbols-outlined">notifications</span>
-<span class="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full"></span>
-</button>
-<div class="w-10 h-10 bg-center bg-no-repeat bg-cover rounded-full" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAoY_LeVqkHngNlltFp_1UZ3vSQmkAdYW6lUUd_bNe4XyaJMLexoWuNIfHCwWe_JXLZcwEZ3ESXuSHuRCd9rPz1VMi5ZFOqSXSfKG3eQkukViPU-be0W24hM1hdVgVWbuJjX0gJFPpvMW33-a5GHvDbCtC92vEB6uTyXzbHNo4e6CmNW49rFok28174tqKadowfcYO2nTPPvN_SSZ-VO6Fco7OacqXMc1UNFw_plx2r65m2YZWlprzR5PdXc0Ma9-xBAuhNXcGgI8KO");'></div>
-</div>
-</header>
-<main class="flex-1 p-6">
-<div class="bg-white dark:bg-gray-800/50 rounded-xl overflow-hidden">
-<div class="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-800">
-<h3 class="text-lg font-semibold text-gray-900 dark:text-white">All Users</h3>
-<button class="bg-primary text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primary/90">
-<span class="material-symbols-outlined">add</span>
-                        Add New User
+<body class="font-display bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white dark:bg-gray-800 p-4 flex flex-col justify-between border-r border-gray-200 dark:border-gray-700">
+            <div>
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-lg">L</div>
+                    <h1 class="text-lg font-bold">Logix Co.</h1>
+                </div>
+                <nav class="flex flex-col gap-2">
+                    <a class="flex items-center gap-3 px-3 py-2 rounded text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" href="/admin">
+                        <span class="text-sm font-medium">Dashboard</span>
+                    </a>
+                    <a class="flex items-center gap-3 px-3 py-2 rounded text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" href="/admin/orders">
+                        <span class="text-sm font-medium">Orders</span>
+                    </a>
+                    <a class="flex items-center gap-3 px-3 py-2 rounded text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" href="/admin/inventory">
+                        <span class="text-sm font-medium">Inventory</span>
+                    </a>
+                    <a class="flex items-center gap-3 px-3 py-2 rounded text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" href="/admin/routes">
+                        <span class="text-sm font-medium">Routes</span>
+                    </a>
+                    <a class="flex items-center gap-3 px-3 py-2 rounded text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" href="/admin/analytics">
+                        <span class="text-sm font-medium">Analytics</span>
+                    </a>
+                    <a class="flex items-center gap-3 px-3 py-2 rounded bg-primary text-white font-medium" href="/admin/users">
+                        <span class="text-sm font-medium">Users</span>
+                    </a>
+                </nav>
+            </div>
+            <div class="px-4 py-4">
+                <a class="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 font-medium" href="/admin/settings">
+                    <span class="text-sm font-medium">Settings</span>
+                </a>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col">
+            <!-- Header -->
+            <header class="flex items-center justify-between h-16 px-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white">User Management</h2>
+                <div class="flex items-center gap-4">
+                    <!-- Notifications Bell -->
+                    <div class="relative">
+                        <button class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800" onclick="toggleNotifications()">
+                            <svg class="w-6 h-6 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+                                <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
+                            </svg>
+                            <span class="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">5</span>
+                        </button>
+                        <div id="notificationDropdown" class="absolute right-0 mt-2 w-80 sm:w-96 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg overflow-hidden hidden">
+                            <div class="p-4 border-b border-gray-200 dark:border-gray-700">
+                                <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Notifications</h3>
+                            </div>
+                            <div class="divide-y divide-gray-200 dark:divide-gray-700">
+                                <div class="p-4 flex items-start gap-4 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors duration-200">
+                                    <div class="flex-shrink-0 w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center">
+                                        <svg class="h-6 w-6 text-blue-500 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-sm text-gray-800 dark:text-gray-200">New order <span class="font-semibold text-blue-600">#12345</span> received.</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">2024-01-20 10:00 AM</p>
+                                    </div>
+                                </div>
+                                <div class="p-4 flex items-start gap-4 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors duration-200">
+                                    <div class="flex-shrink-0 w-10 h-10 rounded-full bg-yellow-100 dark:bg-yellow-900/50 flex items-center justify-center">
+                                        <svg class="h-6 w-6 text-yellow-500 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-sm text-gray-800 dark:text-gray-200">Shipment for order <span class="font-semibold text-blue-600">#67890</span> has been delayed.</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">2024-01-19 03:30 PM</p>
+                                    </div>
+                                </div>
+                                <div class="p-4 flex items-start gap-4 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors duration-200">
+                                    <div class="flex-shrink-0 w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/50 flex items-center justify-center">
+                                        <svg class="h-6 w-6 text-green-500 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-sm text-gray-800 dark:text-gray-200">Order <span class="font-semibold text-blue-600">#112233</span> was successfully delivered.</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">2024-01-18 09:15 AM</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-2 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50">
+                                <a class="block w-full text-center text-sm font-medium text-blue-600 hover:underline" href="#">View all notifications</a>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Profile Picture -->
+                    <div class="w-10 h-10 bg-center bg-no-repeat bg-cover rounded-full cursor-pointer" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAoY_LeVqkHngNlltFp_1UZ3vSQmkAdYW6lUUd_bNe4XyaJMLexoWuNIfHCwWe_JXLZcwEZ3ESXuSHuRCd9rPz1VMi5ZFOqSXSfKG3eQkukViPU-be0W24hM1hdVgVWbuJjX0gJFPpvMW33-a5GHvDbCtC92vEB6uTyXzbHNo4e6CmNW49rFok28174tqKadowfcYO2nTPPvN_SSZ-VO6Fco7OacqXMc1UNFw_plx2r65m2YZWlprzR5PdXc0Ma9-xBAuhNXcGgI8KO");' onclick="window.location.href='/admin/profile'"></div>
+                </div>
+            </header>
+            
+            <!-- Main Content Area -->
+            <main class="flex-1 p-6">
+                <!-- Add User Button -->
+                <div class="mb-6 flex justify-between items-center">
+                    <div class="flex items-center gap-4">
+                        <div class="relative">
+                            <input type="text" id="searchUsers" placeholder="Search users..." class="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
+                            <svg class="absolute left-3 top-2.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <button onclick="openAddUserModal()" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        Add User
                     </button>
-</div>
-<div class="overflow-x-auto">
-<table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-<thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-<tr>
-<th class="px-6 py-3" scope="col">User ID</th>
-<th class="px-6 py-3" scope="col">Name</th>
-<th class="px-6 py-3" scope="col">Email</th>
-<th class="px-6 py-3" scope="col">Role</th>
-<th class="px-6 py-3" scope="col">Status</th>
-<th class="px-6 py-3" scope="col">Actions</th>
-</tr>
-</thead>
-<tbody>
-<tr class="bg-white dark:bg-gray-800/50 border-b dark:border-gray-700">
-<td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">USR-001</td>
-<td class="px-6 py-4">John Doe</td>
-<td class="px-6 py-4">john.doe@example.com</td>
-<td class="px-6 py-4">Administrator</td>
-<td class="px-6 py-4"><span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">Active</span></td>
-<td class="px-6 py-4 space-x-2">
-<button class="text-primary hover:underline">Edit</button>
-<button class="text-red-600 dark:text-red-500 hover:underline">Delete</button>
-</td>
-</tr>
-<tr class="bg-white dark:bg-gray-800/50 border-b dark:border-gray-700">
-<td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">USR-002</td>
-<td class="px-6 py-4">Jane Smith</td>
-<td class="px-6 py-4">jane.smith@example.com</td>
-<td class="px-6 py-4">Manager</td>
-<td class="px-6 py-4"><span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">Active</span></td>
-<td class="px-6 py-4 space-x-2">
-<button class="text-primary hover:underline">Edit</button>
-<button class="text-red-600 dark:text-red-500 hover:underline">Delete</button>
-</td>
-</tr>
-<tr class="bg-white dark:bg-gray-800/50 border-b dark:border-gray-700">
-<td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">USR-003</td>
-<td class="px-6 py-4">Sam Wilson</td>
-<td class="px-6 py-4">sam.wilson@example.com</td>
-<td class="px-6 py-4">Operator</td>
-<td class="px-6 py-4"><span class="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">Inactive</span></td>
-<td class="px-6 py-4 space-x-2">
-<button class="text-primary hover:underline">Edit</button>
-<button class="text-red-600 dark:text-red-500 hover:underline">Delete</button>
-</td>
-</tr>
-<tr class="bg-white dark:bg-gray-800/50 border-b dark:border-gray-700">
-<td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">USR-004</td>
-<td class="px-6 py-4">Emily Brown</td>
-<td class="px-6 py-4">emily.brown@example.com</td>
-<td class="px-6 py-4">Operator</td>
-<td class="px-6 py-4"><span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">Active</span></td>
-<td class="px-6 py-4 space-x-2">
-<button class="text-primary hover:underline">Edit</button>
-<button class="text-red-600 dark:text-red-500 hover:underline">Delete</button>
-</td>
-</tr>
-<tr class="bg-white dark:bg-gray-800/50">
-<td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">USR-005</td>
-<td class="px-6 py-4">Michael Johnson</td>
-<td class="px-6 py-4">michael.johnson@example.com</td>
-<td class="px-6 py-4">Viewer</td>
-<td class="px-6 py-4"><span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">Active</span></td>
-<td class="px-6 py-4 space-x-2">
-<button class="text-primary hover:underline">Edit</button>
-<button class="text-red-600 dark:text-red-500 hover:underline">Delete</button>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</main>
-</div>
-</div>
+                </div>
 
-<script>
-  // User Management page functionality
-  document.addEventListener('DOMContentLoaded', function() {
-    const addUserButton = document.querySelector('button:contains("Add New User")');
-    const editButtons = document.querySelectorAll('button:contains("Edit")');
-    const deleteButtons = document.querySelectorAll('button:contains("Delete")');
-    
-    // Add New User functionality
-    if (addUserButton) {
-      addUserButton.addEventListener('click', function() {
-        alert('Add New User functionality would be implemented here');
-        // This would open a modal or navigate to a form page
-      });
-    }
-    
-    // Edit User functionality
-    editButtons.forEach(button => {
-      button.addEventListener('click', function() {
-        const row = this.closest('tr');
-        const userId = row.querySelector('td:first-child').textContent;
-        alert(`Edit user ${userId} functionality would be implemented here`);
-        // This would open a modal or navigate to an edit form
-      });
-    });
-    
-    // Delete User functionality
-    deleteButtons.forEach(button => {
-      button.addEventListener('click', function() {
-        const row = this.closest('tr');
-        const userId = row.querySelector('td:first-child').textContent;
-        const userName = row.querySelector('td:nth-child(2)').textContent;
-        
-        if (confirm(`Are you sure you want to delete user ${userName} (${userId})?`)) {
-          alert(`Delete user ${userId} functionality would be implemented here`);
-          // This would make an API call to delete the user
+                <!-- Users Table -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                            <thead class="bg-gray-50 dark:bg-gray-700">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">User</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Role</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Last Active</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700" id="usersTableBody">
+                                <!-- Sample users will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Add User Modal -->
+    <div id="addUserModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-gray-800">
+            <div class="mt-3">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Add New User</h3>
+                <form id="addUserForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name</label>
+                        <input type="text" id="userName" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+                        <input type="email" id="userEmail" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Role</label>
+                        <select id="userRole" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white" required>
+                            <option value="admin">Admin</option>
+                            <option value="manager">Manager</option>
+                            <option value="driver">Driver</option>
+                            <option value="warehouse">Warehouse Staff</option>
+                        </select>
+                    </div>
+                    <div class="flex justify-end gap-3 pt-4">
+                        <button type="button" onclick="closeAddUserModal()" class="px-4 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors">Cancel</button>
+                        <button type="submit" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-blue-700 transition-colors">Add User</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div id="editUserModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-gray-800">
+            <div class="mt-3">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Edit User</h3>
+                <form id="editUserForm" class="space-y-4">
+                    <input type="hidden" id="editUserId">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name</label>
+                        <input type="text" id="editUserName" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+                        <input type="email" id="editUserEmail" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Role</label>
+                        <select id="editUserRole" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white" required>
+                            <option value="admin">Admin</option>
+                            <option value="manager">Manager</option>
+                            <option value="driver">Driver</option>
+                            <option value="warehouse">Warehouse Staff</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
+                        <select id="editUserStatus" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white" required>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+                    <div class="flex justify-end gap-3 pt-4">
+                        <button type="button" onclick="closeEditUserModal()" class="px-4 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors">Cancel</button>
+                        <button type="submit" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-blue-700 transition-colors">Update User</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample users data
+        let users = [
+            {
+                id: 1,
+                name: "Alex Thompson",
+                email: "alex.thompson@logix.com",
+                role: "admin",
+                status: "active",
+                lastActive: "2024-01-20 10:30 AM",
+                avatar: "https://lh3.googleusercontent.com/aida-public/AB6AXuAoY_LeVqkHngNlltFp_1UZ3vSQmkAdYW6lUUd_bNe4XyaJMLexoWuNIfHCwWe_JXLZcwEZ3ESXuSHuRCd9rPz1VMi5ZFOqSXSfKG3eQkukViPU-be0W24hM1hdVgVWbuJjX0gJFPpvMW33-a5GHvDbCtC92vEB6uTyXzbHNo4e6CmNW49rFok28174tqKadowfcYO2nTPPvN_SSZ-VO6Fco7OacqXMc1UNFw_plx2r65m2YZWlprzR5PdXc0Ma9-xBAuhNXcGgI8KO"
+            },
+            {
+                id: 2,
+                name: "Sarah Johnson",
+                email: "sarah.johnson@logix.com",
+                role: "manager",
+                status: "active",
+                lastActive: "2024-01-20 09:15 AM",
+                avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80"
+            },
+            {
+                id: 3,
+                name: "Mike Chen",
+                email: "mike.chen@logix.com",
+                role: "driver",
+                status: "active",
+                lastActive: "2024-01-19 05:45 PM",
+                avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80"
+            },
+            {
+                id: 4,
+                name: "Emily Davis",
+                email: "emily.davis@logix.com",
+                role: "warehouse",
+                status: "inactive",
+                lastActive: "2024-01-18 02:20 PM",
+                avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+            },
+            {
+                id: 5,
+                name: "David Wilson",
+                email: "david.wilson@logix.com",
+                role: "driver",
+                status: "active",
+                lastActive: "2024-01-20 08:00 AM",
+                avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+            }
+        ];
+
+        // Notifications functionality
+        function toggleNotifications() {
+            const dropdown = document.getElementById('notificationDropdown');
+            dropdown.classList.toggle('hidden');
         }
-      });
-    });
-    
-    // Load users data from API
-    async function loadUsersData() {
-      try {
-        const response = await fetch('/api/v1/users');
-        const data = await response.json();
-        console.log('Users data loaded:', data);
         
-        // Update the table with real data
-        // This would populate the table with actual user data from the API
-      } catch (error) {
-        console.error('Failed to load users data:', error);
-      }
-    }
-    
-    // Load initial data
-    loadUsersData();
-  });
-</script>
+        // Close notifications dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('notificationDropdown');
+            const button = event.target.closest('button[onclick="toggleNotifications()"]');
+            
+            if (!button && !dropdown.contains(event.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
 
-</body></html>
+        // Render users table
+        function renderUsersTable() {
+            const tbody = document.getElementById('usersTableBody');
+            tbody.innerHTML = '';
+            
+            users.forEach(user => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50 dark:hover:bg-gray-700';
+                
+                const statusColor = user.status === 'active' ? 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-400';
+                const roleColor = getRoleColor(user.role);
+                
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 h-10 w-10">
+                                <img class="h-10 w-10 rounded-full" src="${user.avatar}" alt="${user.name}">
+                            </div>
+                            <div class="ml-4">
+                                <div class="text-sm font-medium text-gray-900 dark:text-white">${user.name}</div>
+                                <div class="text-sm text-gray-500 dark:text-gray-400">${user.email}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${roleColor}">
+                            ${user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${statusColor}">
+                            ${user.status.charAt(0).toUpperCase() + user.status.slice(1)}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                        ${user.lastActive}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button onclick="editUser(${user.id})" class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 mr-3">Edit</button>
+                        <button onclick="deleteUser(${user.id})" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Get role color
+        function getRoleColor(role) {
+            switch(role) {
+                case 'admin': return 'bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-400';
+                case 'manager': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-400';
+                case 'driver': return 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400';
+                case 'warehouse': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-400';
+                default: return 'bg-gray-100 text-gray-800 dark:bg-gray-900/50 dark:text-gray-400';
+            }
+        }
+
+        // Modal functions
+        function openAddUserModal() {
+            document.getElementById('addUserModal').classList.remove('hidden');
+        }
+
+        function closeAddUserModal() {
+            document.getElementById('addUserModal').classList.add('hidden');
+            document.getElementById('addUserForm').reset();
+        }
+
+        function openEditUserModal() {
+            document.getElementById('editUserModal').classList.remove('hidden');
+        }
+
+        function closeEditUserModal() {
+            document.getElementById('editUserModal').classList.add('hidden');
+            document.getElementById('editUserForm').reset();
+        }
+
+        // User management functions
+        function editUser(id) {
+            const user = users.find(u => u.id === id);
+            if (user) {
+                document.getElementById('editUserId').value = user.id;
+                document.getElementById('editUserName').value = user.name;
+                document.getElementById('editUserEmail').value = user.email;
+                document.getElementById('editUserRole').value = user.role;
+                document.getElementById('editUserStatus').value = user.status;
+                openEditUserModal();
+            }
+        }
+
+        function deleteUser(id) {
+            if (confirm('Are you sure you want to delete this user?')) {
+                users = users.filter(u => u.id !== id);
+                renderUsersTable();
+            }
+        }
+
+        // Form submissions
+        document.getElementById('addUserForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const newUser = {
+                id: users.length + 1,
+                name: document.getElementById('userName').value,
+                email: document.getElementById('userEmail').value,
+                role: document.getElementById('userRole').value,
+                status: 'active',
+                lastActive: new Date().toLocaleString(),
+                avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80'
+            };
+            users.push(newUser);
+            renderUsersTable();
+            closeAddUserModal();
+        });
+
+        document.getElementById('editUserForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const id = parseInt(document.getElementById('editUserId').value);
+            const userIndex = users.findIndex(u => u.id === id);
+            if (userIndex !== -1) {
+                users[userIndex].name = document.getElementById('editUserName').value;
+                users[userIndex].email = document.getElementById('editUserEmail').value;
+                users[userIndex].role = document.getElementById('editUserRole').value;
+                users[userIndex].status = document.getElementById('editUserStatus').value;
+                renderUsersTable();
+                closeEditUserModal();
+            }
+        });
+
+        // Search functionality
+        document.getElementById('searchUsers').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredUsers = users.filter(user => 
+                user.name.toLowerCase().includes(searchTerm) || 
+                user.email.toLowerCase().includes(searchTerm) ||
+                user.role.toLowerCase().includes(searchTerm)
+            );
+            
+            // Temporarily replace users array for display
+            const originalUsers = [...users];
+            users = filteredUsers;
+            renderUsersTable();
+            users = originalUsers;
+        });
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            renderUsersTable();
+        });
+    </script>
+</body>
+</html>

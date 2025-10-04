@@ -231,7 +231,15 @@ def optimize_route(route_id):
         if not optimized_route:
             return jsonify({"error": "Route not found or cannot be optimized"}), 404
 
-        return jsonify({"message": "Route optimized successfully", "route": optimized_route.to_dict()}), 200
+        return (
+            jsonify(
+                {
+                    "message": "Route optimized successfully",
+                    "route": optimized_route.to_dict(),
+                }
+            ),
+            200,
+        )
 
     except Exception as e:
         logger.error(f"Optimize route error: {e}")
@@ -388,7 +396,8 @@ def upload_delivery_proof(route_id, stop_id):
         context = f"Route {route_id}, Stop {stop_id}"
         analysis = gemini_client.analyze_delivery_image(image_data, context)
 
-        # TODO: Save image to Cloud Storage and get URL
+        # Save image to Cloud Storage and get URL
+        # Note: Cloud Storage integration needed for production
         image_url = (
             f"gs://logix-delivery-proofs/{route_id}/{stop_id}/{image_file.filename}"
         )

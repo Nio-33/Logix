@@ -75,9 +75,9 @@ def login():
                         "name": user.full_name,
                         "role": user.role.value,
                         "profile_picture": user.profile_picture,
-                        "last_login": user.last_login.isoformat()
-                        if user.last_login
-                        else None,
+                        "last_login": (
+                            user.last_login.isoformat() if user.last_login else None
+                        ),
                     },
                 }
             ),
@@ -167,12 +167,12 @@ def get_current_user():
                         "profile_picture": user.profile_picture,
                         "is_active": user.is_active,
                         "email_verified": user.email_verified,
-                        "created_at": user.created_at.isoformat()
-                        if user.created_at
-                        else None,
-                        "last_login": user.last_login.isoformat()
-                        if user.last_login
-                        else None,
+                        "created_at": (
+                            user.created_at.isoformat() if user.created_at else None
+                        ),
+                        "last_login": (
+                            user.last_login.isoformat() if user.last_login else None
+                        ),
                         "warehouse_ids": user.warehouse_ids,
                         "vehicle_info": user.vehicle_info,
                         "preferences": user.preferences,
@@ -254,12 +254,12 @@ def list_users():
                             "name": user.full_name,
                             "role": user.role.value,
                             "is_active": user.is_active,
-                            "created_at": user.created_at.isoformat()
-                            if user.created_at
-                            else None,
-                            "last_login": user.last_login.isoformat()
-                            if user.last_login
-                            else None,
+                            "created_at": (
+                                user.created_at.isoformat() if user.created_at else None
+                            ),
+                            "last_login": (
+                                user.last_login.isoformat() if user.last_login else None
+                            ),
                         }
                         for user in users
                     ]

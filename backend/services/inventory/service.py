@@ -68,9 +68,11 @@ class InventoryService:
                 description=product_data["description"],
                 category=product_data["category"],
                 brand=product_data.get("brand"),
-                unit_price=Decimal(str(product_data["unit_price"]))
-                if product_data.get("unit_price")
-                else None,
+                unit_price=(
+                    Decimal(str(product_data["unit_price"]))
+                    if product_data.get("unit_price")
+                    else None
+                ),
                 weight=product_data.get("weight"),
                 dimensions=product_data.get("dimensions"),
                 barcode=product_data.get("barcode"),
@@ -627,9 +629,11 @@ class InventoryService:
                 sku=sku,
                 movement_type="transfer_out",
                 quantity=-quantity,
-                reason=f"Transfer to {to_warehouse_id}: {notes}"
-                if notes
-                else f"Transfer to {to_warehouse_id}",
+                reason=(
+                    f"Transfer to {to_warehouse_id}: {notes}"
+                    if notes
+                    else f"Transfer to {to_warehouse_id}"
+                ),
                 user_id=user_id,
                 reference_id=transfer_id,
             )
@@ -639,9 +643,11 @@ class InventoryService:
                 sku=sku,
                 movement_type="transfer_in",
                 quantity=quantity,
-                reason=f"Transfer from {from_warehouse_id}: {notes}"
-                if notes
-                else f"Transfer from {from_warehouse_id}",
+                reason=(
+                    f"Transfer from {from_warehouse_id}: {notes}"
+                    if notes
+                    else f"Transfer from {from_warehouse_id}"
+                ),
                 user_id=user_id,
                 reference_id=transfer_id,
             )

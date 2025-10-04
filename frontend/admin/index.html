@@ -70,7 +70,7 @@
         </a>
 </nav>
 <div class="px-4 py-4">
-<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-primary/10 dark:hover:bg-primary/20 font-medium" href="#">
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-primary/10 dark:hover:bg-primary/20 font-medium" href="/admin/settings">
 <span class="material-symbols-outlined">settings</span>
           Settings
         </a>
@@ -79,11 +79,81 @@
 <div class="flex-1 flex flex-col">
 <header class="flex items-center justify-end h-16 px-6 bg-background-light dark:bg-background-dark border-b border-gray-200 dark:border-gray-800">
 <div class="flex items-center gap-4">
-<button class="relative text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
-<span class="material-symbols-outlined">notifications</span>
-<span class="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full"></span>
+<div class="relative">
+<button class="relative text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white" onclick="toggleNotifications()">
+<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+<path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
+</svg>
+<span class="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">5</span>
 </button>
-<div class="w-10 h-10 bg-center bg-no-repeat bg-cover rounded-full" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAoY_LeVqkHngNlltFp_1UZ3vSQmkAdYW6lUUd_bNe4XyaJMLexoWuNIfHCwWe_JXLZcwEZ3ESXuSHuRCd9rPz1VMi5ZFOqSXSfKG3eQkukViPU-be0W24hM1hdVgVWbuJjX0gJFPpvMW33-a5GHvDbCtC92vEB6uTyXzbHNo4e6CmNW49rFok28174tqKadowfcYO2nTPPvN_SSZ-VO6Fco7OacqXMc1UNFw_plx2r65m2YZWlprzR5PdXc0Ma9-xBAuhNXcGgI8KO");'></div>
+<div id="notificationDropdown" class="absolute right-0 mt-2 w-80 sm:w-96 bg-background-light dark:bg-background-dark border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg overflow-hidden hidden">
+<div class="p-4 border-b border-gray-200 dark:border-gray-700">
+<h3 class="text-lg font-semibold text-gray-800 dark:text-white">Notifications</h3>
+</div>
+<div class="divide-y divide-gray-200 dark:divide-gray-700">
+<div class="p-4 flex items-start gap-4 hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors duration-200">
+<div class="flex-shrink-0 w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center">
+<svg class="h-6 w-6 text-blue-500 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<div class="flex-1">
+<p class="text-sm text-gray-800 dark:text-gray-200">New order <span class="font-semibold text-primary">#12345</span> received.</p>
+<p class="text-xs text-gray-500 dark:text-gray-400 mt-1">2024-01-20 10:00 AM</p>
+</div>
+</div>
+<div class="p-4 flex items-start gap-4 hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors duration-200">
+<div class="flex-shrink-0 w-10 h-10 rounded-full bg-yellow-100 dark:bg-yellow-900/50 flex items-center justify-center">
+<svg class="h-6 w-6 text-yellow-500 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<div class="flex-1">
+<p class="text-sm text-gray-800 dark:text-gray-200">Shipment for order <span class="font-semibold text-primary">#67890</span> has been delayed.</p>
+<p class="text-xs text-gray-500 dark:text-gray-400 mt-1">2024-01-19 03:30 PM</p>
+</div>
+</div>
+<div class="p-4 flex items-start gap-4 hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors duration-200">
+<div class="flex-shrink-0 w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/50 flex items-center justify-center">
+<svg class="h-6 w-6 text-green-500 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<div class="flex-1">
+<p class="text-sm text-gray-800 dark:text-gray-200">Order <span class="font-semibold text-primary">#112233</span> was successfully delivered.</p>
+<p class="text-xs text-gray-500 dark:text-gray-400 mt-1">2024-01-18 09:15 AM</p>
+</div>
+</div>
+<div class="p-4 flex items-start gap-4 hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors duration-200">
+<div class="flex-shrink-0 w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/50 flex items-center justify-center">
+<svg class="h-6 w-6 text-red-500 dark:text-red-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.21 3.03-1.742 3.03H4.42c-1.532 0-2.492-1.696-1.742-3.03l5.58-9.92zM10 13a1 1 0 110-2 1 1 0 010 2zm-1-4a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" fill-rule="evenodd"></path>
+</svg>
+</div>
+<div class="flex-1">
+<p class="text-sm text-gray-800 dark:text-gray-200">Low stock alert for product <span class="font-semibold text-gray-900 dark:text-white">"Heavy Duty Pallet Jack"</span>.</p>
+<p class="text-xs text-gray-500 dark:text-gray-400 mt-1">2024-01-17 05:45 PM</p>
+</div>
+</div>
+<div class="p-4 flex items-start gap-4 hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors duration-200">
+<div class="flex-shrink-0 w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center">
+<svg class="h-6 w-6 text-indigo-500 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.546-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<div class="flex-1">
+<p class="text-sm text-gray-800 dark:text-gray-200">A new customer inquiry has been received.</p>
+<p class="text-xs text-gray-500 dark:text-gray-400 mt-1">2024-01-16 11:00 AM</p>
+</div>
+</div>
+</div>
+<div class="p-2 border-t border-gray-200 dark:border-gray-700 bg-background-light/50 dark:bg-background-dark/50">
+<a class="block w-full text-center text-sm font-medium text-primary hover:underline" href="#">View all notifications</a>
+</div>
+</div>
+</div>
+<div class="w-10 h-10 bg-center bg-no-repeat bg-cover rounded-full cursor-pointer" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAoY_LeVqkHngNlltFp_1UZ3vSQmkAdYW6lUUd_bNe4XyaJMLexoWuNIfHCwWe_JXLZcwEZ3ESXuSHuRCd9rPz1VMi5ZFOqSXSfKG3eQkukViPU-be0W24hM1hdVgVWbuJjX0gJFPpvMW33-a5GHvDbCtC92vEB6uTyXzbHNo4e6CmNW49rFok28174tqKadowfcYO2nTPPvN_SSZ-VO6Fco7OacqXMc1UNFw_plx2r65m2YZWlprzR5PdXc0Ma9-xBAuhNXcGgI8KO");' onclick="window.location.href='/admin/profile'"></div>
 </div>
 </header>
 <main class="flex-1 p-6">
@@ -182,6 +252,21 @@
     if(href && (href === '/admin' || href.startsWith('/admin/'))){
       e.preventDefault();
       window.location.assign(href);
+    }
+  });
+
+  function toggleNotifications() {
+    const dropdown = document.getElementById('notificationDropdown');
+    dropdown.classList.toggle('hidden');
+  }
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', function(event) {
+    const dropdown = document.getElementById('notificationDropdown');
+    const button = event.target.closest('button[onclick="toggleNotifications()"]');
+    
+    if (!button && !dropdown.contains(event.target)) {
+      dropdown.classList.add('hidden');
     }
   });
 </script>

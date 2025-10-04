@@ -56,59 +56,55 @@ Thumbs.db
 # Logs
 *.log
 logs/
-app.log
+log/
 
 # Database
 *.db
 *.sqlite3
 
+# Cache
+.cache/
+.pytest_cache/
+.coverage
+htmlcov/
+
 # Firebase
 firebase-adminsdk-*.json
 service-account-*.json
 
-# Google Cloud
-gcp-credentials.json
-service-account-key.json
-
-# Testing
-.coverage
-.pytest_cache/
-htmlcov/
-.tox/
-.nox/
+# Docker
+.dockerignore
 
 # Temporary files
-tmp/
-temp/
 *.tmp
+*.temp
+temp/
+tmp/
 
-# Node modules (if any)
+# Node modules (if any frontend build tools are added)
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Build artifacts
-build/
+# Build outputs
 dist/
+build/
 *.tgz
 *.tar.gz
 
-# Documentation build
-docs/_build/
-site/
+# Coverage reports
+.coverage
+htmlcov/
+coverage.xml
+*.cover
+.hypothesis/
 
 # Jupyter Notebook
 .ipynb_checkpoints
 
 # pyenv
 .python-version
-
-# pipenv
-Pipfile.lock
-
-# PEP 582
-__pypackages__/
 
 # Celery
 celerybeat-schedule
@@ -131,6 +127,3 @@ celerybeat.pid
 .mypy_cache/
 .dmypy.json
 dmypy.json
-
-# Pyre type checker
-.pyre/
