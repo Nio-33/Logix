@@ -234,8 +234,14 @@
                             </div>
                         </div>
                         
-                        <!-- Save Changes Button -->
-                        <div class="mt-8 flex justify-end">
+                        <!-- Action Buttons -->
+                        <div class="mt-8 flex justify-between items-center">
+                            <button id="logoutBtn" class="bg-red-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                                </svg>
+                                Logout
+                            </button>
                             <button class="bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-700 transition-colors">Save Changes</button>
                         </div>
                     </div>
@@ -261,8 +267,41 @@
             }
         });
         
+        // Logout functionality
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                // Clear any stored authentication data
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('user');
+                sessionStorage.clear();
+                
+                // Show loading state
+                const logoutBtn = document.getElementById('logoutBtn');
+                const originalText = logoutBtn.innerHTML;
+                logoutBtn.innerHTML = `
+                    <svg class="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                    Logging out...
+                `;
+                logoutBtn.disabled = true;
+                
+                // Simulate logout process
+                setTimeout(() => {
+                    // Redirect to login page
+                    window.location.href = '/auth/login';
+                }, 1500);
+            }
+        }
+        
         // Profile page functionality
         document.addEventListener('DOMContentLoaded', function() {
+            // Add logout button event listener
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', logout);
+            }
+            
             // Form elements
             const nameInput = document.getElementById('name');
             const emailInput = document.getElementById('email');

@@ -384,6 +384,58 @@ def create_app(config_name="development"):
         except Exception as e:
             return f"<html><body><h1>Profile</h1><p>Error loading profile page: {e}</p></body></html>"
 
+    # Authentication routes
+    @app.route("/auth/login")
+    def auth_login():
+        """Serve the login page"""
+        try:
+            import os
+
+            frontend_path = os.path.join(
+                os.path.dirname(os.path.dirname(__file__)),
+                "frontend",
+                "auth",
+                "login.html",
+            )
+            with open(frontend_path, "r") as f:
+                return f.read()
+        except Exception as e:
+            return f"<html><body><h1>Login</h1><p>Error loading login page: {e}</p></body></html>"
+
+    @app.route("/auth/signup")
+    def auth_signup():
+        """Serve the sign up page"""
+        try:
+            import os
+
+            frontend_path = os.path.join(
+                os.path.dirname(os.path.dirname(__file__)),
+                "frontend",
+                "auth",
+                "signup.html",
+            )
+            with open(frontend_path, "r") as f:
+                return f.read()
+        except Exception as e:
+            return f"<html><body><h1>Sign Up</h1><p>Error loading signup page: {e}</p></body></html>"
+
+    @app.route("/auth/reset-password")
+    def auth_reset_password():
+        """Serve the password reset page"""
+        try:
+            import os
+
+            frontend_path = os.path.join(
+                os.path.dirname(os.path.dirname(__file__)),
+                "frontend",
+                "auth",
+                "reset-password.html",
+            )
+            with open(frontend_path, "r") as f:
+                return f.read()
+        except Exception as e:
+            return f"<html><body><h1>Reset Password</h1><p>Error loading reset password page: {e}</p></body></html>"
+
     # Serve JavaScript files
     @app.route("/js/<path:filename>")
     def serve_js(filename):
