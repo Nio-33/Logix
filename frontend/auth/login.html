@@ -149,12 +149,13 @@
     <script>
         // Firebase configuration
         const firebaseConfig = {
-            apiKey: "AIzaSyBKG8RKZ4QX_7Z8YZ3QZ4Z5Z6Z7Z8Z9ZA",  // TODO: Replace with actual API key
+            apiKey: "AIzaSyCFcHF-IwCIas46N0ny1VdzPnjRj4oV-dU",
             authDomain: "logix-a94ec.firebaseapp.com",
             projectId: "logix-a94ec",
             storageBucket: "logix-a94ec.firebasestorage.app",
-            messagingSenderId: "103347196983889168741",
-            appId: "1:103347196983889168741:web:abc123def456"  // TODO: Replace with actual app ID
+            messagingSenderId: "162731401337",
+            appId: "1:162731401337:web:b0305b6a25ebf75c95b4a8",
+            measurementId: "G-FJSFV50QZR"
         };
 
         // Initialize Firebase
@@ -194,11 +195,11 @@
             
             // Show error message
             function showError(message) {
-                // Remove existing error if any
+                // Remove existing messages
                 const existingError = document.getElementById('error-message');
-                if (existingError) {
-                    existingError.remove();
-                }
+                const existingSuccess = document.getElementById('success-message');
+                if (existingError) existingError.remove();
+                if (existingSuccess) existingSuccess.remove();
                 
                 const errorDiv = document.createElement('div');
                 errorDiv.id = 'error-message';
@@ -211,6 +212,24 @@
                 
                 // Auto-remove after 5 seconds
                 setTimeout(() => errorDiv.remove(), 5000);
+            }
+            
+            // Show success message
+            function showSuccess(message) {
+                // Remove existing messages
+                const existingError = document.getElementById('error-message');
+                const existingSuccess = document.getElementById('success-message');
+                if (existingError) existingError.remove();
+                if (existingSuccess) existingSuccess.remove();
+                
+                const successDiv = document.createElement('div');
+                successDiv.id = 'success-message';
+                successDiv.className = 'bg-green-100 dark:bg-green-900/30 border border-green-400 dark:border-green-700 text-green-700 dark:text-green-400 px-4 py-3 rounded relative mb-4';
+                successDiv.innerHTML = `
+                    <strong class="font-bold">Success!</strong>
+                    <span class="block sm:inline"> ${message}</span>
+                `;
+                loginForm.insertBefore(successDiv, loginForm.firstChild);
             }
             
             // Login with Firebase
@@ -254,27 +273,35 @@
                         body: JSON.stringify({ id_token: idToken })
                     });
                     
-                    if (!response.ok) {
-                        const error = await response.json();
-                        throw new Error(error.error || 'Login failed');
-                    }
-                    
                     const data = await response.json();
+                    
+                    if (!response.ok) {
+                        throw new Error(data.error || 'Login failed');
+                    }
                     
                     // Store JWT token
                     if (rememberMe) {
                         localStorage.setItem('authToken', data.access_token);
-                        localStorage.setItem('refreshToken', data.refresh_token);
+                        if (data.refresh_token) {
+                            localStorage.setItem('refreshToken', data.refresh_token);
+                        }
                     } else {
                         sessionStorage.setItem('authToken', data.access_token);
-                        sessionStorage.setItem('refreshToken', data.refresh_token);
+                        if (data.refresh_token) {
+                            sessionStorage.setItem('refreshToken', data.refresh_token);
+                        }
                     }
                     
                     // Store user info
-                    localStorage.setItem('user', JSON.stringify(data.user));
+                    localStorage.setItem('user', JSON.stringify(data.user || { email: email, displayName: user.displayName }));
                     
-                    // Redirect to admin dashboard
-                    window.location.href = '/admin';
+                    // Show success message
+                    showSuccess('Login successful! Redirecting to dashboard...');
+                    
+                    // Redirect to admin dashboard after brief delay
+                    setTimeout(() => {
+                        window.location.href = '/admin';
+                    }, 1000);
                     
                 } catch (error) {
                     console.error('Login error:', error);

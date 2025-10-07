@@ -65,11 +65,27 @@ class AuthService:
         """
         try:
             user_id = user_info["uid"]
+            
+            # If Firestore is not available, create in-memory user
+            if not self.users_collection:
+                logger.warning("Firestore not available - creating in-memory user")
+                return User(
+                    uid=user_id,
+                    email=user_info["email"],
+                    role=UserRole.CUSTOMER,  # Default role
+                    first_name=self._extract_first_name(user_info),
+                    last_name=self._extract_last_name(user_info),
+                    profile_picture=user_info.get("picture"),
+                    email_verified=user_info.get("email_verified", False),
+                    is_active=True,
+                )
+            
             existing_user = self.get_user(user_id)
 
             if existing_user:
                 # Update last login and return existing user
                 existing_user.update_last_login()
+                self.update_user(existing_user)
                 return existing_user
 
             # Create new user
@@ -99,6 +115,10 @@ class AuthService:
         Create new user in Firestore
         """
         try:
+            if not self.users_collection:
+                logger.warning(f"Firestore not available - user {user.email} created in-memory only")
+                return user
+            
             user_data = user.to_dict()
             self.users_collection.document(user.uid).set(user_data)
 
@@ -114,6 +134,10 @@ class AuthService:
         Update existing user in Firestore
         """
         try:
+            if not self.users_collection:
+                logger.warning(f"Firestore not available - user {user.email} updated in-memory only")
+                return user
+            
             user.updated_at = datetime.utcnow()
             user_data = user.to_dict()
 

@@ -5,13 +5,13 @@
 // You can find these values in your Firebase Console > Project Settings > General > Your apps
 
 const firebaseConfig = {
-    // Get this from Firebase Console > Project Settings > General > Web apps
-    apiKey: "YOUR_FIREBASE_API_KEY",  // Replace with your actual API key
-    authDomain: "logix-a94ec.firebaseapp.com",  // This should be correct
-    projectId: "logix-a94ec",  // This should be correct
-    storageBucket: "logix-a94ec.firebasestorage.app",  // This should be correct
-    messagingSenderId: "103347196983889168741",  // This should be correct
-    appId: "YOUR_FIREBASE_APP_ID"  // Replace with your actual app ID
+    apiKey: "AIzaSyCFcHF-IwCIas46N0ny1VdzPnjRj4oV-dU",
+    authDomain: "logix-a94ec.firebaseapp.com",
+    projectId: "logix-a94ec",
+    storageBucket: "logix-a94ec.firebasestorage.app",
+    messagingSenderId: "162731401337",
+    appId: "1:162731401337:web:b0305b6a25ebf75c95b4a8",
+    measurementId: "G-FJSFV50QZR"
 };
 
 // Export the configuration

@@ -187,12 +187,13 @@
     <script>
         // Firebase configuration
         const firebaseConfig = {
-            apiKey: "AIzaSyBKG8RKZ4QX_7Z8YZ3QZ4Z5Z6Z7Z8Z9ZA",  // TODO: Replace with actual API key
+            apiKey: "AIzaSyCFcHF-IwCIas46N0ny1VdzPnjRj4oV-dU",
             authDomain: "logix-a94ec.firebaseapp.com",
             projectId: "logix-a94ec",
             storageBucket: "logix-a94ec.firebasestorage.app",
-            messagingSenderId: "103347196983889168741",
-            appId: "1:103347196983889168741:web:abc123def456"  // TODO: Replace with actual app ID
+            messagingSenderId: "162731401337",
+            appId: "1:162731401337:web:b0305b6a25ebf75c95b4a8",
+            measurementId: "G-FJSFV50QZR"
         };
 
         // Initialize Firebase
@@ -333,7 +334,7 @@
                     // Get Firebase ID token
                     const idToken = await user.getIdToken();
                     
-                    // Send user data to backend to create user profile in Firestore
+                    // Send user data to backend to create user profile and get JWT
                     const response = await fetch('/api/v1/auth/login', {
                         method: 'POST',
                         headers: {
@@ -344,21 +345,28 @@
                         })
                     });
                     
+                    const data = await response.json();
+                    
                     if (!response.ok) {
-                        const error = await response.json();
-                        throw new Error(error.error || 'Registration failed');
+                        throw new Error(data.error || 'Registration failed');
                     }
                     
+                    // Store JWT tokens (user is now logged in)
+                    localStorage.setItem('authToken', data.access_token);
+                    if (data.refresh_token) {
+                        localStorage.setItem('refreshToken', data.refresh_token);
+                    }
+                    
+                    // Store user info
+                    localStorage.setItem('user', JSON.stringify(data.user || { email: email, displayName: fullName }));
+                    
                     // Show success message
-                    showSuccess('Account created successfully! Redirecting to login...');
+                    showSuccess('Account created successfully! Redirecting to dashboard...');
                     
-                    // Sign out the user so they can log in properly
-                    await auth.signOut();
-                    
-                    // Redirect to login after 2 seconds
+                    // Redirect to dashboard after 1.5 seconds
                     setTimeout(() => {
-                        window.location.href = '/auth/login';
-                    }, 2000);
+                        window.location.href = '/admin';
+                    }, 1500);
                     
                 } catch (error) {
                     console.error('Signup error:', error);
