@@ -8,6 +8,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script>
         tailwind.config = {
             darkMode: "class",
@@ -82,17 +85,27 @@
                     />
                 </div>
                 
-                <div>
+                <div class="relative">
                     <label class="sr-only" for="password">Password</label>
                     <input 
                         autocomplete="current-password" 
-                        class="relative block w-full appearance-none rounded-lg border border-border-light bg-background-light px-3 py-3 text-text-light placeholder-subtle-light focus:z-10 focus:border-primary focus:outline-none focus:ring-primary dark:border-border-dark dark:bg-background-dark dark:text-text-dark dark:placeholder-subtle-dark dark:focus:border-primary" 
+                        class="relative block w-full appearance-none rounded-lg border border-border-light bg-background-light px-3 py-3 pr-10 text-text-light placeholder-subtle-light focus:z-10 focus:border-primary focus:outline-none focus:ring-primary dark:border-border-dark dark:bg-background-dark dark:text-text-dark dark:placeholder-subtle-dark dark:focus:border-primary" 
                         id="password" 
                         name="password" 
                         placeholder="Password" 
                         required 
                         type="password"
                     />
+                    <button 
+                        type="button" 
+                        class="absolute inset-y-0 right-0 flex items-center pr-3 text-subtle-light dark:text-subtle-dark hover:text-text-light dark:hover:text-text-dark transition-colors"
+                        onclick="togglePasswordVisibility('password', 'togglePasswordIcon')"
+                    >
+                        <svg id="togglePasswordIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        </svg>
+                    </button>
                 </div>
                 
                 <div class="flex items-center justify-between">
@@ -134,36 +147,160 @@
     </div>
 
     <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBKG8RKZ4QX_7Z8YZ3QZ4Z5Z6Z7Z8Z9ZA",  // TODO: Replace with actual API key
+            authDomain: "logix-a94ec.firebaseapp.com",
+            projectId: "logix-a94ec",
+            storageBucket: "logix-a94ec.firebasestorage.app",
+            messagingSenderId: "103347196983889168741",
+            appId: "1:103347196983889168741:web:abc123def456"  // TODO: Replace with actual app ID
+        };
+
+        // Initialize Firebase
+        let app, auth;
+        try {
+            app = firebase.initializeApp(firebaseConfig);
+            auth = firebase.auth();
+            console.log('Firebase initialized successfully');
+        } catch (error) {
+            console.error('Firebase initialization error:', error);
+        }
+
+        // Toggle password visibility
+        function togglePasswordVisibility(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.innerHTML = `
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>
+                `;
+            } else {
+                input.type = 'password';
+                icon.innerHTML = `
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                `;
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             const loginForm = document.getElementById('loginForm');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const submitButton = loginForm.querySelector('button[type="submit"]');
             
-            loginForm.addEventListener('submit', function(e) {
+            // Show error message
+            function showError(message) {
+                // Remove existing error if any
+                const existingError = document.getElementById('error-message');
+                if (existingError) {
+                    existingError.remove();
+                }
+                
+                const errorDiv = document.createElement('div');
+                errorDiv.id = 'error-message';
+                errorDiv.className = 'bg-red-100 dark:bg-red-900/30 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-400 px-4 py-3 rounded relative mb-4';
+                errorDiv.innerHTML = `
+                    <strong class="font-bold">Error!</strong>
+                    <span class="block sm:inline"> ${message}</span>
+                `;
+                loginForm.insertBefore(errorDiv, loginForm.firstChild);
+                
+                // Auto-remove after 5 seconds
+                setTimeout(() => errorDiv.remove(), 5000);
+            }
+            
+            // Login with Firebase
+            loginForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
-                const email = document.getElementById('email').value;
-                const password = document.getElementById('password').value;
+                const email = emailInput.value.trim();
+                const password = passwordInput.value;
                 const rememberMe = document.getElementById('remember-me').checked;
                 
                 // Basic validation
                 if (!email || !password) {
-                    alert('Please fill in all fields');
+                    showError('Please fill in all fields');
                     return;
                 }
                 
-                // Simulate login process
-                console.log('Login attempt:', { email, password, rememberMe });
-                
                 // Show loading state
-                const submitButton = loginForm.querySelector('button[type="submit"]');
                 const originalText = submitButton.textContent;
-                submitButton.textContent = 'Logging in...';
+                submitButton.innerHTML = `
+                    <svg class="animate-spin h-5 w-5 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                `;
                 submitButton.disabled = true;
                 
-                // Simulate API call
-                setTimeout(() => {
-                    // For demo purposes, redirect to admin dashboard
+                try {
+                    // Sign in with Firebase Authentication
+                    const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                    const user = userCredential.user;
+                    
+                    // Get Firebase ID token
+                    const idToken = await user.getIdToken();
+                    
+                    // Send token to backend to get JWT
+                    const response = await fetch('/api/v1/auth/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ id_token: idToken })
+                    });
+                    
+                    if (!response.ok) {
+                        const error = await response.json();
+                        throw new Error(error.error || 'Login failed');
+                    }
+                    
+                    const data = await response.json();
+                    
+                    // Store JWT token
+                    if (rememberMe) {
+                        localStorage.setItem('authToken', data.access_token);
+                        localStorage.setItem('refreshToken', data.refresh_token);
+                    } else {
+                        sessionStorage.setItem('authToken', data.access_token);
+                        sessionStorage.setItem('refreshToken', data.refresh_token);
+                    }
+                    
+                    // Store user info
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    
+                    // Redirect to admin dashboard
                     window.location.href = '/admin';
-                }, 1500);
+                    
+                } catch (error) {
+                    console.error('Login error:', error);
+                    
+                    // Firebase error messages
+                    let errorMessage = 'Login failed. Please try again.';
+                    if (error.code === 'auth/user-not-found') {
+                        errorMessage = 'No account found with this email. Please sign up first.';
+                    } else if (error.code === 'auth/wrong-password') {
+                        errorMessage = 'Incorrect password. Please try again.';
+                    } else if (error.code === 'auth/invalid-email') {
+                        errorMessage = 'Invalid email address.';
+                    } else if (error.code === 'auth/user-disabled') {
+                        errorMessage = 'This account has been disabled.';
+                    } else if (error.code === 'auth/too-many-requests') {
+                        errorMessage = 'Too many failed attempts. Please try again later.';
+                    } else if (error.message) {
+                        errorMessage = error.message;
+                    }
+                    
+                    showError(errorMessage);
+                    
+                    // Reset button
+                    submitButton.textContent = originalText;
+                    submitButton.disabled = false;
+                }
             });
             
             // Theme toggle functionality

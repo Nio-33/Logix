@@ -52,7 +52,9 @@ def initialize_firebase():
 
     except Exception as e:
         logger.error(f"Failed to initialize Firebase: {e}")
-        raise
+        # Don't raise the exception, just log it and continue
+        logger.warning("Firebase initialization failed, continuing without Firebase")
+        return None
 
 
 def get_firestore_client():

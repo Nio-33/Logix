@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Logix - Sign Up</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -93,30 +97,50 @@
                             />
                         </div>
                         
-                        <div>
+                        <div class="relative">
                             <label class="sr-only" for="password">Password</label>
                             <input 
                                 autocomplete="new-password" 
-                                class="appearance-none rounded-lg relative block w-full px-4 py-3 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white focus:outline-none focus:ring-primary focus:border-primary focus:z-10 text-sm" 
+                                class="appearance-none rounded-lg relative block w-full px-4 py-3 pr-10 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white focus:outline-none focus:ring-primary focus:border-primary focus:z-10 text-sm" 
                                 id="password" 
                                 name="password" 
                                 placeholder="Password" 
                                 required 
                                 type="password"
                             />
+                            <button 
+                                type="button" 
+                                class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+                                onclick="togglePasswordVisibility('password', 'togglePasswordIcon')"
+                            >
+                                <svg id="togglePasswordIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                            </button>
                         </div>
                         
-                        <div>
+                        <div class="relative">
                             <label class="sr-only" for="confirm-password">Confirm Password</label>
                             <input 
                                 autocomplete="new-password" 
-                                class="appearance-none rounded-lg relative block w-full px-4 py-3 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white focus:outline-none focus:ring-primary focus:border-primary focus:z-10 text-sm" 
+                                class="appearance-none rounded-lg relative block w-full px-4 py-3 pr-10 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white focus:outline-none focus:ring-primary focus:border-primary focus:z-10 text-sm" 
                                 id="confirm-password" 
                                 name="confirm-password" 
                                 placeholder="Confirm Password" 
                                 required 
                                 type="password"
                             />
+                            <button 
+                                type="button" 
+                                class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+                                onclick="togglePasswordVisibility('confirm-password', 'toggleConfirmPasswordIcon')"
+                            >
+                                <svg id="toggleConfirmPasswordIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                            </button>
                         </div>
                     </div>
                     
@@ -161,11 +185,82 @@
     </div>
 
     <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBKG8RKZ4QX_7Z8YZ3QZ4Z5Z6Z7Z8Z9ZA",  // TODO: Replace with actual API key
+            authDomain: "logix-a94ec.firebaseapp.com",
+            projectId: "logix-a94ec",
+            storageBucket: "logix-a94ec.firebasestorage.app",
+            messagingSenderId: "103347196983889168741",
+            appId: "1:103347196983889168741:web:abc123def456"  // TODO: Replace with actual app ID
+        };
+
+        // Initialize Firebase
+        let app, auth;
+        try {
+            app = firebase.initializeApp(firebaseConfig);
+            auth = firebase.auth();
+            console.log('Firebase initialized successfully');
+        } catch (error) {
+            console.error('Firebase initialization error:', error);
+        }
+
+        // Toggle password visibility
+        function togglePasswordVisibility(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.innerHTML = `
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>
+                `;
+            } else {
+                input.type = 'password';
+                icon.innerHTML = `
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                `;
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             const signupForm = document.getElementById('signupForm');
             const passwordField = document.getElementById('password');
             const confirmPasswordField = document.getElementById('confirm-password');
             const termsCheckbox = document.getElementById('terms-and-conditions');
+            const submitButton = signupForm.querySelector('button[type="submit"]');
+            
+            // Show error message
+            function showError(message) {
+                const existingError = document.getElementById('error-message');
+                if (existingError) existingError.remove();
+                
+                const errorDiv = document.createElement('div');
+                errorDiv.id = 'error-message';
+                errorDiv.className = 'bg-red-100 dark:bg-red-900/30 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-400 px-4 py-3 rounded relative mb-4';
+                errorDiv.innerHTML = `
+                    <strong class="font-bold">Error!</strong>
+                    <span class="block sm:inline"> ${message}</span>
+                `;
+                signupForm.insertBefore(errorDiv, signupForm.firstChild);
+                setTimeout(() => errorDiv.remove(), 5000);
+            }
+            
+            // Show success message
+            function showSuccess(message) {
+                const existingSuccess = document.getElementById('success-message');
+                if (existingSuccess) existingSuccess.remove();
+                
+                const successDiv = document.createElement('div');
+                successDiv.id = 'success-message';
+                successDiv.className = 'bg-green-100 dark:bg-green-900/30 border border-green-400 dark:border-green-700 text-green-700 dark:text-green-400 px-4 py-3 rounded relative mb-4';
+                successDiv.innerHTML = `
+                    <strong class="font-bold">Success!</strong>
+                    <span class="block sm:inline"> ${message}</span>
+                `;
+                signupForm.insertBefore(successDiv, signupForm.firstChild);
+            }
             
             // Password confirmation validation
             function validatePasswordMatch() {
@@ -184,53 +279,110 @@
             passwordField.addEventListener('input', validatePasswordMatch);
             confirmPasswordField.addEventListener('input', validatePasswordMatch);
             
-            // Form submission
-            signupForm.addEventListener('submit', function(e) {
+            // Form submission with Firebase
+            signupForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
-                const formData = {
-                    fullName: document.getElementById('full-name').value,
-                    email: document.getElementById('email-address').value,
-                    password: passwordField.value,
-                    confirmPassword: confirmPasswordField.value,
-                    termsAccepted: termsCheckbox.checked
-                };
+                const fullName = document.getElementById('full-name').value.trim();
+                const email = document.getElementById('email-address').value.trim();
+                const password = passwordField.value;
+                const confirmPassword = confirmPasswordField.value;
+                const termsAccepted = termsCheckbox.checked;
                 
-                // Basic validation
-                if (!formData.fullName || !formData.email || !formData.password || !formData.confirmPassword) {
-                    alert('Please fill in all fields');
+                // Validation
+                if (!fullName || !email || !password || !confirmPassword) {
+                    showError('Please fill in all fields');
                     return;
                 }
                 
-                if (formData.password !== formData.confirmPassword) {
-                    alert('Passwords do not match');
+                if (password !== confirmPassword) {
+                    showError('Passwords do not match');
                     return;
                 }
                 
-                if (!formData.termsAccepted) {
-                    alert('Please accept the Terms of Service and Privacy Policy');
+                if (!termsAccepted) {
+                    showError('Please accept the Terms of Service and Privacy Policy');
                     return;
                 }
                 
-                // Password strength validation
-                if (formData.password.length < 8) {
-                    alert('Password must be at least 8 characters long');
+                if (password.length < 6) {
+                    showError('Password must be at least 6 characters long');
                     return;
                 }
                 
                 // Show loading state
-                const submitButton = signupForm.querySelector('button[type="submit"]');
                 const originalText = submitButton.textContent;
-                submitButton.textContent = 'Creating Account...';
+                submitButton.innerHTML = `
+                    <svg class="animate-spin h-5 w-5 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                `;
                 submitButton.disabled = true;
                 
-                // Simulate API call
-                console.log('Signup attempt:', formData);
-                
-                setTimeout(() => {
-                    alert('Account created successfully! Please log in.');
-                    window.location.href = '/auth/login';
-                }, 2000);
+                try {
+                    // Create user with Firebase Authentication
+                    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                    const user = userCredential.user;
+                    
+                    // Update user profile with display name
+                    await user.updateProfile({
+                        displayName: fullName
+                    });
+                    
+                    // Get Firebase ID token
+                    const idToken = await user.getIdToken();
+                    
+                    // Send user data to backend to create user profile in Firestore
+                    const response = await fetch('/api/v1/auth/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ 
+                            id_token: idToken
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        const error = await response.json();
+                        throw new Error(error.error || 'Registration failed');
+                    }
+                    
+                    // Show success message
+                    showSuccess('Account created successfully! Redirecting to login...');
+                    
+                    // Sign out the user so they can log in properly
+                    await auth.signOut();
+                    
+                    // Redirect to login after 2 seconds
+                    setTimeout(() => {
+                        window.location.href = '/auth/login';
+                    }, 2000);
+                    
+                } catch (error) {
+                    console.error('Signup error:', error);
+                    
+                    // Firebase error messages
+                    let errorMessage = 'Registration failed. Please try again.';
+                    if (error.code === 'auth/email-already-in-use') {
+                        errorMessage = 'An account with this email already exists. Please log in.';
+                    } else if (error.code === 'auth/invalid-email') {
+                        errorMessage = 'Invalid email address.';
+                    } else if (error.code === 'auth/weak-password') {
+                        errorMessage = 'Password is too weak. Please use a stronger password.';
+                    } else if (error.code === 'auth/operation-not-allowed') {
+                        errorMessage = 'Email/password accounts are not enabled. Please contact support.';
+                    } else if (error.message) {
+                        errorMessage = error.message;
+                    }
+                    
+                    showError(errorMessage);
+                    
+                    // Reset button
+                    submitButton.textContent = originalText;
+                    submitButton.disabled = false;
+                }
             });
             
             // Theme toggle functionality
@@ -238,7 +390,6 @@
             const sunIcon = document.getElementById('sunIcon');
             const moonIcon = document.getElementById('moonIcon');
             
-            // Check for saved theme preference or default to dark
             const savedTheme = localStorage.getItem('theme') || 'dark';
             if (savedTheme === 'dark') {
                 document.documentElement.classList.add('dark');
@@ -252,13 +403,11 @@
             
             themeToggle.addEventListener('click', function() {
                 if (document.documentElement.classList.contains('dark')) {
-                    // Switch to light theme
                     document.documentElement.classList.remove('dark');
                     localStorage.setItem('theme', 'light');
                     sunIcon.classList.add('hidden');
                     moonIcon.classList.remove('hidden');
                 } else {
-                    // Switch to dark theme
                     document.documentElement.classList.add('dark');
                     localStorage.setItem('theme', 'dark');
                     sunIcon.classList.remove('hidden');

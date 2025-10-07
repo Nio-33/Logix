@@ -71,6 +71,7 @@ htmlcov/
 # Firebase
 firebase-adminsdk-*.json
 service-account-*.json
+firebase-service-account.json
 
 # Docker
 .dockerignore
