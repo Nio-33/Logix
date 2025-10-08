@@ -153,17 +153,26 @@ def get_current_user():
         user = auth_service.get_user(user_id)
 
         if not user:
-            # If Firestore is not available, return user data from JWT token
+            # If Firestore is not available, return user data from JWT token + dev storage
             if not auth_service.users_collection:
-                logger.warning("Firestore not available - returning user data from JWT token")
+                logger.warning("Firestore not available - returning user data from JWT token + dev storage")
                 from flask_jwt_extended import get_jwt
                 jwt_data = get_jwt()
+                
+                # Get saved profile data from development storage
+                dev_profile = auth_service.get_dev_profile(user_id)
                 
                 # Parse name into first_name and last_name
                 full_name = jwt_data.get("name", "")
                 name_parts = full_name.split(" ", 1) if full_name else ["", ""]
                 first_name = name_parts[0] if len(name_parts) > 0 else ""
                 last_name = name_parts[1] if len(name_parts) > 1 else ""
+                
+                # Use saved profile data if available, otherwise use JWT data
+                if dev_profile:
+                    first_name = dev_profile.get("first_name", first_name)
+                    last_name = dev_profile.get("last_name", last_name)
+                    full_name = f"{first_name} {last_name}".strip()
                 
                 return (
                     jsonify(
@@ -175,7 +184,7 @@ def get_current_user():
                                 "last_name": last_name,
                                 "name": full_name,
                                 "role": jwt_data.get("role", "customer"),
-                                "phone": "",
+                                "phone": dev_profile.get("phone", "") if dev_profile else "",
                                 "profile_picture": None,
                                 "is_active": True,
                                 "email_verified": jwt_data.get("email_verified", False),
@@ -183,7 +192,7 @@ def get_current_user():
                                 "last_login": None,
                                 "warehouse_ids": [],
                                 "vehicle_info": {},
-                                "preferences": {},
+                                "preferences": dev_profile.get("preferences", {}) if dev_profile else {},
                             }
                         }
                     ),
@@ -236,22 +245,33 @@ def update_current_user():
 
         user = auth_service.get_user(user_id)
         if not user:
-            # If Firestore is not available, return success without updating
+            # If Firestore is not available, save to development storage
             if not auth_service.users_collection:
-                logger.warning("Firestore not available - profile update skipped in development mode")
+                logger.warning("Firestore not available - saving profile to development storage")
                 from flask_jwt_extended import get_jwt
                 jwt_data = get_jwt()
                 
-                # Return updated user data from JWT + request data
+                # Prepare profile data to save
+                profile_data = {
+                    "first_name": data.get("first_name", ""),
+                    "last_name": data.get("last_name", ""),
+                    "phone": data.get("phone", ""),
+                    "preferences": data.get("preferences", {}),
+                }
+                
+                # Save to development storage
+                auth_service.save_dev_profile(user_id, profile_data)
+                
+                # Return updated user data
                 updated_user_data = {
                     "uid": user_id,
                     "email": jwt_data.get("email", ""),
-                    "first_name": data.get("first_name", ""),
-                    "last_name": data.get("last_name", ""),
-                    "name": f"{data.get('first_name', '')} {data.get('last_name', '')}".strip(),
+                    "first_name": profile_data["first_name"],
+                    "last_name": profile_data["last_name"],
+                    "name": f"{profile_data['first_name']} {profile_data['last_name']}".strip(),
                     "role": jwt_data.get("role", "customer"),
-                    "phone": data.get("phone", ""),
-                    "preferences": data.get("preferences", {}),
+                    "phone": profile_data["phone"],
+                    "preferences": profile_data["preferences"],
                 }
                 
                 return (

@@ -21,6 +21,9 @@ class AuthService:
             self.users_collection = self.db.collection("users")
         else:
             self.users_collection = None
+        
+        # Development mode storage for profile data
+        self._dev_profile_storage = {}
 
     def get_user(self, user_id: str) -> Optional[User]:
         """
@@ -42,6 +45,19 @@ class AuthService:
         except Exception as e:
             logger.error(f"Failed to get user {user_id}: {e}")
             raise
+
+    def get_dev_profile(self, user_id: str) -> Optional[Dict[str, Any]]:
+        """
+        Get user profile data from development storage
+        """
+        return self._dev_profile_storage.get(user_id)
+
+    def save_dev_profile(self, user_id: str, profile_data: Dict[str, Any]) -> None:
+        """
+        Save user profile data to development storage
+        """
+        self._dev_profile_storage[user_id] = profile_data
+        logger.info(f"Saved profile data for user {user_id} in development mode")
 
     def get_user_by_email(self, email: str) -> Optional[User]:
         """
