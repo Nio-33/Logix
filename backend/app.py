@@ -459,6 +459,29 @@ def create_app(config_name="development"):
                 {"Content-Type": "application/javascript"},
             )
 
+    # Serve shared utility files
+    @app.route("/shared/utils/<path:filename>")
+    def serve_shared_utils(filename):
+        """Serve shared utility files"""
+        try:
+            import os
+
+            utils_path = os.path.join(
+                os.path.dirname(os.path.dirname(__file__)),
+                "frontend",
+                "shared",
+                "utils",
+                filename,
+            )
+            with open(utils_path, "r") as f:
+                return f.read(), 200, {"Content-Type": "application/javascript"}
+        except Exception as e:
+            return (
+                f"// Error loading {filename}: {e}",
+                404,
+                {"Content-Type": "application/javascript"},
+            )
+
     # Serve favicon
     @app.route("/favicon.ico")
     def serve_favicon():

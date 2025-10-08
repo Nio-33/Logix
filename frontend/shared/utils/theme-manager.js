@@ -14,8 +14,10 @@ class ThemeManager {
      * Initialize theme manager
      */
     init() {
+        console.log('🎨 ThemeManager initializing...');
         // Apply saved theme immediately to prevent flash
-        this.applySavedTheme();
+        const savedTheme = this.applySavedTheme();
+        console.log('🎨 ThemeManager initialized with theme:', savedTheme);
         
         // Listen for theme changes from other pages
         window.addEventListener('storage', (e) => {
@@ -61,6 +63,7 @@ class ThemeManager {
      */
     applyTheme(theme) {
         const html = document.documentElement;
+        const wasDark = html.classList.contains('dark');
         
         // Remove existing theme classes
         html.classList.remove('dark');
@@ -78,9 +81,12 @@ class ThemeManager {
             }
         }
         
+        const isDark = html.classList.contains('dark');
+        console.log(`🎨 Theme applied: ${theme} (${isDark ? 'dark' : 'light'})`);
+        
         // Dispatch custom event for other components
         window.dispatchEvent(new CustomEvent('themeChanged', { 
-            detail: { theme: theme, isDark: html.classList.contains('dark') }
+            detail: { theme: theme, isDark: isDark }
         }));
     }
 
@@ -152,13 +158,16 @@ class ThemeManager {
 
 // Initialize theme manager when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('🎨 DOM ready, initializing ThemeManager...');
     window.themeManager = new ThemeManager();
 });
 
 // Also initialize immediately if DOM is already loaded
 if (document.readyState === 'loading') {
+    console.log('🎨 DOM still loading, waiting for DOMContentLoaded...');
     // DOM is still loading, wait for DOMContentLoaded
 } else {
+    console.log('🎨 DOM already loaded, initializing ThemeManager immediately...');
     // DOM is already loaded
     window.themeManager = new ThemeManager();
 }
