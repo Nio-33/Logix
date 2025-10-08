@@ -191,8 +191,9 @@
                                     </div>
                                 </div>
                                 <div class="text-center lg:text-left">
-                                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-1">Alex Thompson</h3>
-                                    <p class="text-gray-600 dark:text-gray-400">alex.thompson@logix.com</p>
+                                    <h3 id="profile-name" class="text-xl font-bold text-gray-900 dark:text-white mb-1">Loading...</h3>
+                                    <p id="profile-email" class="text-gray-600 dark:text-gray-400">Loading...</p>
+                                    <p id="profile-role" class="text-sm text-gray-500 dark:text-gray-500 mt-1 capitalize">Loading...</p>
                                 </div>
                             </div>
                             
@@ -201,12 +202,20 @@
                                 <!-- Name and Email -->
                                 <div class="space-y-4 mb-6">
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" for="name">Name</label>
-                                        <input type="text" id="name" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white" value="Alex Thompson">
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" for="first-name">First Name</label>
+                                        <input type="text" id="first-name" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white" value="">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" for="last-name">Last Name</label>
+                                        <input type="text" id="last-name" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white" value="">
                                     </div>
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" for="email">Email Address</label>
-                                        <input type="email" id="email" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white" value="alex.thompson@logix.com">
+                                        <input type="email" id="email" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white" value="" readonly>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" for="role">Role</label>
+                                        <input type="text" id="role" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-300 capitalize" value="" readonly>
                                     </div>
                                 </div>
                                 
@@ -294,8 +303,92 @@
             }
         }
         
+        // Load user profile data
+        async function loadUserProfile() {
+            try {
+                // First, try to get user data from localStorage
+                const storedUser = localStorage.getItem('user') || sessionStorage.getItem('user');
+                if (storedUser) {
+                    const userData = JSON.parse(storedUser);
+                    console.log('Loaded user data from storage:', userData);
+                    populateProfileData(userData);
+                }
+                
+                // Then fetch fresh data from backend
+                const authToken = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+                if (!authToken) {
+                    console.warn('No auth token found, redirecting to login...');
+                    window.location.href = '/auth/login';
+                    return;
+                }
+                
+                const response = await fetch('/api/v1/auth/me', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Loaded user data from API:', data);
+                    populateProfileData(data);
+                    
+                    // Update stored user data
+                    if (localStorage.getItem('user')) {
+                        localStorage.setItem('user', JSON.stringify(data));
+                    } else {
+                        sessionStorage.setItem('user', JSON.stringify(data));
+                    }
+                } else if (response.status === 401) {
+                    console.error('Unauthorized, redirecting to login...');
+                    localStorage.removeItem('authToken');
+                    localStorage.removeItem('user');
+                    sessionStorage.clear();
+                    window.location.href = '/auth/login';
+                } else {
+                    console.error('Failed to load user profile:', response.status);
+                }
+            } catch (error) {
+                console.error('Error loading user profile:', error);
+            }
+        }
+        
+        // Populate profile data in the UI
+        function populateProfileData(userData) {
+            // Update profile header
+            const profileName = document.getElementById('profile-name');
+            const profileEmail = document.getElementById('profile-email');
+            const profileRole = document.getElementById('profile-role');
+            
+            const fullName = userData.first_name && userData.last_name 
+                ? `${userData.first_name} ${userData.last_name}`
+                : userData.email?.split('@')[0] || 'User';
+            
+            if (profileName) profileName.textContent = fullName;
+            if (profileEmail) profileEmail.textContent = userData.email || '';
+            if (profileRole) profileRole.textContent = userData.role || 'customer';
+            
+            // Update form fields
+            const firstNameInput = document.getElementById('first-name');
+            const lastNameInput = document.getElementById('last-name');
+            const emailInput = document.getElementById('email');
+            const roleInput = document.getElementById('role');
+            
+            if (firstNameInput) firstNameInput.value = userData.first_name || '';
+            if (lastNameInput) lastNameInput.value = userData.last_name || '';
+            if (emailInput) emailInput.value = userData.email || '';
+            if (roleInput) roleInput.value = userData.role || 'customer';
+            
+            console.log('✅ Profile data populated successfully');
+        }
+        
         // Profile page functionality
         document.addEventListener('DOMContentLoaded', function() {
+            // Load user profile data
+            loadUserProfile();
+            
             // Add logout button event listener
             const logoutBtn = document.getElementById('logoutBtn');
             if (logoutBtn) {
@@ -303,7 +396,8 @@
             }
             
             // Form elements
-            const nameInput = document.getElementById('name');
+            const firstNameInput = document.getElementById('first-name');
+            const lastNameInput = document.getElementById('last-name');
             const emailInput = document.getElementById('email');
             const currentPasswordInput = document.getElementById('current-password');
             const newPasswordInput = document.getElementById('new-password');
@@ -320,7 +414,7 @@
             
             // Save changes functionality
             if (saveButton) {
-                saveButton.addEventListener('click', function() {
+                saveButton.addEventListener('click', async function() {
                     // Validate password fields if any are filled
                     if (newPasswordInput.value || confirmPasswordInput.value || currentPasswordInput.value) {
                         if (!currentPasswordInput.value) {
@@ -335,26 +429,79 @@
                             alert('New passwords do not match');
                             return;
                         }
+                        if (newPasswordInput.value.length < 6) {
+                            alert('Password must be at least 6 characters long');
+                            return;
+                        }
                     }
                     
-                    // Collect form data
-                    const profileData = {
-                        name: nameInput.value,
-                        email: emailInput.value,
-                        currentPassword: currentPasswordInput.value,
-                        newPassword: newPasswordInput.value
-                    };
+                    // Show loading state
+                    const originalText = saveButton.textContent;
+                    saveButton.textContent = 'Saving...';
+                    saveButton.disabled = true;
                     
-                    console.log('Saving profile data:', profileData);
-                    
-                    // Simulate API call
-                    setTimeout(() => {
-                        alert('Profile updated successfully!');
-                        // Clear password fields
-                        currentPasswordInput.value = '';
-                        newPasswordInput.value = '';
-                        confirmPasswordInput.value = '';
-                    }, 1000);
+                    try {
+                        // Collect form data
+                        const profileData = {
+                            first_name: firstNameInput.value,
+                            last_name: lastNameInput.value,
+                            email: emailInput.value
+                        };
+                        
+                        console.log('Saving profile data:', profileData);
+                        
+                        // Get auth token
+                        const authToken = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+                        
+                        // Update profile via API
+                        const response = await fetch('/api/v1/auth/me', {
+                            method: 'PUT',
+                            headers: {
+                                'Authorization': `Bearer ${authToken}`,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(profileData)
+                        });
+                        
+                        if (response.ok) {
+                            const updatedUser = await response.json();
+                            console.log('Profile updated successfully:', updatedUser);
+                            
+                            // Update stored user data
+                            if (localStorage.getItem('user')) {
+                                localStorage.setItem('user', JSON.stringify(updatedUser));
+                            } else {
+                                sessionStorage.setItem('user', JSON.stringify(updatedUser));
+                            }
+                            
+                            // Refresh profile display
+                            populateProfileData(updatedUser);
+                            
+                            // Show success message
+                            const successMessage = document.createElement('div');
+                            successMessage.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+                            successMessage.textContent = 'Profile updated successfully!';
+                            document.body.appendChild(successMessage);
+                            
+                            setTimeout(() => {
+                                successMessage.remove();
+                            }, 3000);
+                            
+                            // Clear password fields
+                            currentPasswordInput.value = '';
+                            newPasswordInput.value = '';
+                            confirmPasswordInput.value = '';
+                        } else {
+                            const error = await response.json();
+                            alert('Failed to update profile: ' + (error.message || 'Unknown error'));
+                        }
+                    } catch (error) {
+                        console.error('Error updating profile:', error);
+                        alert('An error occurred while updating your profile. Please try again.');
+                    } finally {
+                        saveButton.textContent = originalText;
+                        saveButton.disabled = false;
+                    }
                 });
             }
             
