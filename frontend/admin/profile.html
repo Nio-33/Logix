@@ -336,13 +336,16 @@
                 if (response.ok) {
                     const data = await response.json();
                     console.log('Loaded user data from API:', data);
-                    populateProfileData(data);
+                    
+                    // Backend returns data in a 'user' object
+                    const userData = data.user || data;
+                    populateProfileData(userData);
                     
                     // Update stored user data
                     if (localStorage.getItem('user')) {
-                        localStorage.setItem('user', JSON.stringify(data));
+                        localStorage.setItem('user', JSON.stringify(userData));
                     } else {
-                        sessionStorage.setItem('user', JSON.stringify(data));
+                        sessionStorage.setItem('user', JSON.stringify(userData));
                     }
                 } else if (response.status === 401) {
                     console.error('Unauthorized, redirecting to login...');
@@ -362,18 +365,26 @@
         
         // Populate profile data in the UI
         function populateProfileData(userData) {
+            console.log('📝 Populating profile with data:', userData);
+            
             // Update profile header
             const profileName = document.getElementById('profile-name');
             const profileEmail = document.getElementById('profile-email');
             const profileRole = document.getElementById('profile-role');
             
-            const fullName = userData.first_name && userData.last_name 
-                ? `${userData.first_name} ${userData.last_name}`
-                : userData.email?.split('@')[0] || 'User';
+            // Handle different data structures (backend vs frontend)
+            const firstName = userData.first_name || '';
+            const lastName = userData.last_name || '';
+            const email = userData.email || '';
+            const role = userData.role || 'customer';
+            
+            const fullName = firstName && lastName 
+                ? `${firstName} ${lastName}`
+                : userData.name || email?.split('@')[0] || 'User';
             
             if (profileName) profileName.textContent = fullName;
-            if (profileEmail) profileEmail.textContent = userData.email || '';
-            if (profileRole) profileRole.textContent = userData.role || 'customer';
+            if (profileEmail) profileEmail.textContent = email;
+            if (profileRole) profileRole.textContent = role;
             
             // Update form fields
             const firstNameInput = document.getElementById('first-name');
@@ -381,10 +392,10 @@
             const emailInput = document.getElementById('email');
             const roleInput = document.getElementById('role');
             
-            if (firstNameInput) firstNameInput.value = userData.first_name || '';
-            if (lastNameInput) lastNameInput.value = userData.last_name || '';
-            if (emailInput) emailInput.value = userData.email || '';
-            if (roleInput) roleInput.value = userData.role || 'customer';
+            if (firstNameInput) firstNameInput.value = firstName;
+            if (lastNameInput) lastNameInput.value = lastName;
+            if (emailInput) emailInput.value = email;
+            if (roleInput) roleInput.value = role;
             
             console.log('✅ Profile data populated successfully');
         }
@@ -471,8 +482,11 @@
                         });
                         
                         if (response.ok) {
-                            const updatedUser = await response.json();
-                            console.log('Profile updated successfully:', updatedUser);
+                            const responseData = await response.json();
+                            console.log('Profile updated successfully:', responseData);
+                            
+                            // Backend returns data in a 'user' object
+                            const updatedUser = responseData.user || responseData;
                             
                             // Update stored user data
                             if (localStorage.getItem('user')) {
