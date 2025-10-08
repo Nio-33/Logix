@@ -334,18 +334,12 @@
                     const selectedTheme = this.value;
                     console.log('Theme changed to:', selectedTheme);
                     
-                    // Apply theme change
-                    if (selectedTheme === 'Dark') {
-                        document.documentElement.classList.add('dark');
-                    } else if (selectedTheme === 'Light') {
-                        document.documentElement.classList.remove('dark');
-                    } else if (selectedTheme === 'System Default') {
-                        // Use system preference
-                        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                            document.documentElement.classList.add('dark');
-                        } else {
-                            document.documentElement.classList.remove('dark');
-                        }
+                    // Use theme manager to apply theme
+                    if (window.themeManager) {
+                        window.themeManager.saveTheme(selectedTheme);
+                    } else {
+                        // Fallback if theme manager not loaded
+                        applyTheme(selectedTheme);
                     }
                 });
             }
@@ -370,13 +364,90 @@
                         language: languagePreference ? languagePreference.value : 'English (US)'
                     };
                     
-                    // Simulate API call
+                    // Save settings to localStorage
+                    localStorage.setItem('logix_settings', JSON.stringify(settings));
+                    
+                    // Apply theme immediately using theme manager
+                    if (window.themeManager) {
+                        window.themeManager.saveTheme(settings.theme);
+                    } else {
+                        applyTheme(settings.theme);
+                    }
+                    
+                    console.log('Settings saved:', settings);
+                    
+                    // Show success message
+                    const successMessage = document.createElement('div');
+                    successMessage.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+                    successMessage.textContent = 'Settings saved successfully!';
+                    document.body.appendChild(successMessage);
+                    
+                    // Remove success message after 3 seconds
                     setTimeout(() => {
-                        console.log('Settings saved:', settings);
-                        alert('Settings saved successfully!');
-                    }, 1000);
+                        successMessage.remove();
+                    }, 3000);
                 });
             }
+            
+            // Theme application function
+            function applyTheme(theme) {
+                if (theme === 'Dark') {
+                    document.documentElement.classList.add('dark');
+                } else if (theme === 'Light') {
+                    document.documentElement.classList.remove('dark');
+                } else if (theme === 'System Default') {
+                    // Use system preference
+                    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                        document.documentElement.classList.add('dark');
+                    } else {
+                        document.documentElement.classList.remove('dark');
+                    }
+                }
+                
+                // Save theme preference for other pages
+                localStorage.setItem('logix_theme', theme);
+            }
+            
+            // Load saved settings on page load
+            function loadSettings() {
+                const savedSettings = localStorage.getItem('logix_settings');
+                if (savedSettings) {
+                    const settings = JSON.parse(savedSettings);
+                    
+                    // Apply saved settings to form
+                    if (themeSelection) {
+                        themeSelection.value = settings.theme || 'Light';
+                        if (window.themeManager) {
+                            window.themeManager.applyTheme(settings.theme);
+                        } else {
+                            applyTheme(settings.theme);
+                        }
+                    }
+                    if (emailAlerts) {
+                        emailAlerts.checked = settings.emailAlerts || false;
+                    }
+                    if (pushNotifications) {
+                        pushNotifications.checked = settings.pushNotifications || false;
+                    }
+                    if (languagePreference) {
+                        languagePreference.value = settings.language || 'English (US)';
+                    }
+                } else {
+                    // Default theme loading
+                    const savedTheme = localStorage.getItem('logix_theme') || localStorage.getItem('theme') || 'Light';
+                    if (themeSelection) {
+                        themeSelection.value = savedTheme;
+                        if (window.themeManager) {
+                            window.themeManager.applyTheme(savedTheme);
+                        } else {
+                            applyTheme(savedTheme);
+                        }
+                    }
+                }
+            }
+            
+            // Load settings when page loads
+            loadSettings();
             
             // Integration buttons
             const slackConnect = document.querySelector('button[class*="text-blue-600 dark:text-blue-400"]');
@@ -388,5 +459,6 @@
             }
         });
     </script>
+<script src="/frontend/shared/utils/theme-manager.js"></script>
 </body>
 </html>
