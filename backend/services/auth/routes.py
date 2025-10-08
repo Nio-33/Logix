@@ -153,7 +153,36 @@ def get_current_user():
         user = auth_service.get_user(user_id)
 
         if not user:
-            return jsonify({"error": "User not found"}), 404
+            # If Firestore is not available, return user data from JWT token
+            if not auth_service.users_collection:
+                logger.warning("Firestore not available - returning user data from JWT token")
+                from flask_jwt_extended import get_jwt
+                jwt_data = get_jwt()
+                
+                return (
+                    jsonify(
+                        {
+                            "user": {
+                                "uid": user_id,
+                                "email": jwt_data.get("email", ""),
+                                "name": jwt_data.get("name", ""),
+                                "role": jwt_data.get("role", "customer"),
+                                "phone": "",
+                                "profile_picture": None,
+                                "is_active": True,
+                                "email_verified": jwt_data.get("email_verified", False),
+                                "created_at": None,
+                                "last_login": None,
+                                "warehouse_ids": [],
+                                "vehicle_info": {},
+                                "preferences": {},
+                            }
+                        }
+                    ),
+                    200,
+                )
+            else:
+                return jsonify({"error": "User not found"}), 404
 
         return (
             jsonify(
@@ -199,7 +228,33 @@ def update_current_user():
 
         user = auth_service.get_user(user_id)
         if not user:
-            return jsonify({"error": "User not found"}), 404
+            # If Firestore is not available, return success without updating
+            if not auth_service.users_collection:
+                logger.warning("Firestore not available - profile update skipped in development mode")
+                from flask_jwt_extended import get_jwt
+                jwt_data = get_jwt()
+                
+                # Return updated user data from JWT + request data
+                updated_user_data = {
+                    "uid": user_id,
+                    "email": jwt_data.get("email", ""),
+                    "name": f"{data.get('first_name', '')} {data.get('last_name', '')}".strip(),
+                    "role": jwt_data.get("role", "customer"),
+                    "phone": data.get("phone", ""),
+                    "preferences": data.get("preferences", {}),
+                }
+                
+                return (
+                    jsonify(
+                        {
+                            "message": "Profile updated successfully (development mode)",
+                            "user": updated_user_data,
+                        }
+                    ),
+                    200,
+                )
+            else:
+                return jsonify({"error": "User not found"}), 404
 
         # Update allowed fields
         allowed_fields = ["first_name", "last_name", "phone", "preferences"]

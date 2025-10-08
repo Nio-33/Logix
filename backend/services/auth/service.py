@@ -27,7 +27,7 @@ class AuthService:
         Get user by ID from Firestore
         """
         if not self.users_collection:
-            logger.warning("Firestore not available in development mode")
+            logger.warning("Firestore not available in development mode - returning None")
             return None
 
         try:
@@ -36,6 +36,7 @@ class AuthService:
             if user_doc.exists:
                 return User.from_dict(user_doc.to_dict())
 
+            logger.warning(f"User {user_id} not found in Firestore")
             return None
 
         except Exception as e:
