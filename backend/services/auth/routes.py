@@ -159,13 +159,21 @@ def get_current_user():
                 from flask_jwt_extended import get_jwt
                 jwt_data = get_jwt()
                 
+                # Parse name into first_name and last_name
+                full_name = jwt_data.get("name", "")
+                name_parts = full_name.split(" ", 1) if full_name else ["", ""]
+                first_name = name_parts[0] if len(name_parts) > 0 else ""
+                last_name = name_parts[1] if len(name_parts) > 1 else ""
+                
                 return (
                     jsonify(
                         {
                             "user": {
                                 "uid": user_id,
                                 "email": jwt_data.get("email", ""),
-                                "name": jwt_data.get("name", ""),
+                                "first_name": first_name,
+                                "last_name": last_name,
+                                "name": full_name,
                                 "role": jwt_data.get("role", "customer"),
                                 "phone": "",
                                 "profile_picture": None,
@@ -238,6 +246,8 @@ def update_current_user():
                 updated_user_data = {
                     "uid": user_id,
                     "email": jwt_data.get("email", ""),
+                    "first_name": data.get("first_name", ""),
+                    "last_name": data.get("last_name", ""),
                     "name": f"{data.get('first_name', '')} {data.get('last_name', '')}".strip(),
                     "role": jwt_data.get("role", "customer"),
                     "phone": data.get("phone", ""),
