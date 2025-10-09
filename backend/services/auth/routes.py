@@ -554,6 +554,57 @@ def update_user_role(user_id):
         return jsonify({"error": "Failed to update user role"}), 500
 
 
+@auth_bp.route("/debug/users", methods=["GET"])
+def debug_users():
+    """
+    Debug endpoint to see current users in development storage
+    """
+    try:
+        if not auth_service.users_collection:
+            users_data = []
+            for user_id, user in auth_service._dev_users_storage.items():
+                users_data.append({
+                    "uid": user_id,
+                    "email": user.email,
+                    "name": user.full_name,
+                    "role": user.role.value,
+                    "is_active": user.is_active
+                })
+            
+            # Also check profile storage
+            profile_data = []
+            for user_id, profile in auth_service._dev_profile_storage.items():
+                profile_data.append({
+                    "uid": user_id,
+                    "profile": profile
+                })
+            
+            return jsonify({
+                "users": users_data, 
+                "count": len(users_data),
+                "profiles": profile_data,
+                "profile_count": len(profile_data)
+            })
+        else:
+            return jsonify({"error": "Not in development mode"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@auth_bp.route("/debug/cleanup-duplicates", methods=["POST"])
+def cleanup_duplicates():
+    """
+    Clean up duplicate emails in development storage
+    """
+    try:
+        stats = auth_service.clean_duplicate_emails()
+        return jsonify({
+            "message": "Duplicate cleanup completed",
+            "stats": stats
+        })
+    except Exception as e:
+        logger.error(f"Cleanup duplicates error: {e}")
+        return jsonify({"error": "Failed to cleanup duplicates"}), 500
+
 @auth_bp.route("/users/<user_id>/activate", methods=["POST"])
 @require_auth()  # Allow any authenticated user for now
 def activate_user(user_id):

@@ -139,22 +139,15 @@ class AuthService:
         Create new user in Firestore
         """
         try:
+            # Normalize email first
+            user.email = user.email.lower().strip()
+            
             # Check email uniqueness first
             if self._email_exists(user.email):
                 raise ValueError(f"Email {user.email} is already registered")
             
-            if not self.users_collection:
-                logger.warning(f"Firestore not available - user {user.email} created in development mode")
-                # Store in development mode
-                self._dev_users_storage[user.uid] = user
-                logger.info(f"User created in development mode: {user.email}")
-                return user
-            
-            user_data = user.to_dict()
-            self.users_collection.document(user.uid).set(user_data)
-
-            logger.info(f"User created: {user.email}")
-            return user
+            # Use the normalized storage method
+            return self.normalize_and_store_user(user)
 
         except Exception as e:
             logger.error(f"Failed to create user {user.email}: {e}")
@@ -165,17 +158,18 @@ class AuthService:
         Update existing user in Firestore
         """
         try:
+            # Normalize email first
+            user.email = user.email.lower().strip()
+            user.updated_at = datetime.now(timezone.utc)
+            
             if not self.users_collection:
                 logger.warning(f"Firestore not available - user {user.email} updated in development mode")
                 # Update in development mode
-                user.updated_at = datetime.now(timezone.utc)
                 self._dev_users_storage[user.uid] = user
                 logger.info(f"User updated in development mode: {user.email}")
                 return user
             
-            user.updated_at = datetime.now(timezone.utc)
             user_data = user.to_dict()
-
             self.users_collection.document(user.uid).update(user_data)
 
             logger.info(f"User updated: {user.email}")
@@ -286,6 +280,65 @@ class AuthService:
         except Exception as e:
             logger.error(f"Failed to check email existence: {e}")
             return False
+    
+    def normalize_and_store_user(self, user: User) -> User:
+        """
+        Normalize email to lowercase and store user
+        """
+        # Normalize email to lowercase
+        user.email = user.email.lower().strip()
+        
+        if not self.users_collection:
+            # Store in development mode
+            self._dev_users_storage[user.uid] = user
+            logger.info(f"User normalized and stored in development mode: {user.email}")
+            return user
+        
+        # Store in Firestore
+        user_data = user.to_dict()
+        self.users_collection.document(user.uid).set(user_data)
+        logger.info(f"User normalized and stored in Firestore: {user.email}")
+        return user
+    
+    def clean_duplicate_emails(self) -> dict:
+        """
+        Clean up duplicate emails in development storage
+        Returns statistics about the cleanup
+        """
+        if self.users_collection:
+            return {"message": "Not in development mode", "duplicates_removed": 0}
+        
+        stats = {
+            "total_users_before": len(self._dev_users_storage),
+            "duplicates_removed": 0,
+            "emails_seen": set(),
+            "users_to_remove": []
+        }
+        
+        # Find duplicates
+        for user_id, user in self._dev_users_storage.items():
+            email_lower = user.email.lower().strip()
+            
+            if email_lower in stats["emails_seen"]:
+                # This is a duplicate
+                stats["users_to_remove"].append(user_id)
+                stats["duplicates_removed"] += 1
+                logger.warning(f"Found duplicate email: {user.email} (user_id: {user_id})")
+            else:
+                # Normalize the email and mark as seen
+                user.email = email_lower
+                stats["emails_seen"].add(email_lower)
+        
+        # Remove duplicates (keep the first occurrence)
+        for user_id in stats["users_to_remove"]:
+            removed_user = self._dev_users_storage.pop(user_id, None)
+            if removed_user:
+                logger.info(f"Removed duplicate user: {removed_user.email} (user_id: {user_id})")
+        
+        stats["total_users_after"] = len(self._dev_users_storage)
+        logger.info(f"Duplicate cleanup completed: {stats}")
+        
+        return stats
 
     def search_users(self, search_term: str, limit: int = 10) -> List[User]:
         """
