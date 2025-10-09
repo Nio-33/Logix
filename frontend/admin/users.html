@@ -466,6 +466,9 @@
                 // Create user via backend API
                 const response = await window.authGuard.fetch('/api/v1/auth/users', {
                     method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
                     body: JSON.stringify({
                         name: name,
                         email: email,
@@ -490,9 +493,16 @@
                         loadUsers();
                     }, 500);
                 } else {
-                    const error = await response.json();
-                    console.error('❌ Failed to create user:', error);
-                    alert('Failed to create user: ' + (error.error || 'Unknown error'));
+                    let errorMessage = 'Unknown error';
+                    try {
+                        const error = await response.json();
+                        errorMessage = error.error || error.message || 'Unknown error';
+                        console.error('❌ Failed to create user:', error);
+                    } catch (e) {
+                        console.error('❌ Failed to parse error response:', e);
+                        errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+                    }
+                    alert('Failed to create user: ' + errorMessage);
                 }
                 
             } catch (error) {
@@ -524,6 +534,9 @@
                 // Update user via backend API
                 const response = await window.authGuard.fetch(`/api/v1/auth/users/${userId}`, {
                     method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
                     body: JSON.stringify(updateData)
                 });
                 
@@ -535,9 +548,16 @@
                     closeEditUserModal();
                     loadUsers(); // Reload the users list
                 } else {
-                    const error = await response.json();
-                    console.error('❌ Failed to update user:', error);
-                    alert('Failed to update user: ' + (error.error || 'Unknown error'));
+                    let errorMessage = 'Unknown error';
+                    try {
+                        const error = await response.json();
+                        errorMessage = error.error || error.message || 'Unknown error';
+                        console.error('❌ Failed to update user:', error);
+                    } catch (e) {
+                        console.error('❌ Failed to parse error response:', e);
+                        errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+                    }
+                    alert('Failed to update user: ' + errorMessage);
                 }
                 
             } catch (error) {
