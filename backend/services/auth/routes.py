@@ -316,6 +316,81 @@ def update_current_user():
         return jsonify({"error": "Failed to update profile"}), 500
 
 
+@auth_bp.route("/users", methods=["POST"])
+@require_auth(required_role=UserRole.OPERATIONS_MANAGER)
+def create_user():
+    """
+    Create a new user (admin/operations manager only)
+    """
+    try:
+        data = request.get_json()
+        
+        # Validate required fields
+        required_fields = ["name", "email", "password", "role"]
+        for field in required_fields:
+            if not data.get(field):
+                return jsonify({"error": f"{field} is required"}), 400
+        
+        # Validate role
+        try:
+            role_enum = UserRole(data["role"])
+        except ValueError:
+            return jsonify({"error": "Invalid role"}), 400
+        
+        # Create User object
+        from shared.models.user import User
+        import uuid
+        
+        # Parse name into first_name and last_name
+        name_parts = data["name"].split(" ", 1) if data["name"] else ["", ""]
+        first_name = name_parts[0] if len(name_parts) > 0 else ""
+        last_name = name_parts[1] if len(name_parts) > 1 else ""
+        
+        # Generate a unique user ID (in production, this would come from Firebase Auth)
+        user_id = str(uuid.uuid4())
+        
+        user = User(
+            uid=user_id,
+            email=data["email"],
+            role=role_enum,
+            first_name=first_name,
+            last_name=last_name,
+            is_active=data.get("is_active", True),
+            email_verified=False,
+            warehouse_ids=[],
+            vehicle_info={},
+            preferences={}
+        )
+        
+        # Create user via AuthService
+        created_user = auth_service.create_user(user)
+        
+        logger.info(f"User {created_user.email} created successfully")
+        
+        return (
+            jsonify(
+                {
+                    "message": "User created successfully",
+                    "user": {
+                        "uid": created_user.uid,
+                        "email": created_user.email,
+                        "name": created_user.full_name,
+                        "role": created_user.role.value,
+                        "is_active": created_user.is_active,
+                        "created_at": (
+                            created_user.created_at.isoformat() if created_user.created_at else None
+                        ),
+                    }
+                }
+            ),
+            201,
+        )
+        
+    except Exception as e:
+        logger.error(f"Create user error: {e}")
+        return jsonify({"error": "Failed to create user"}), 500
+
+
 @auth_bp.route("/users", methods=["GET"])
 @require_auth(required_role=UserRole.OPERATIONS_MANAGER)
 def list_users():
@@ -356,6 +431,61 @@ def list_users():
     except Exception as e:
         logger.error(f"List users error: {e}")
         return jsonify({"error": "Failed to list users"}), 500
+
+
+@auth_bp.route("/users/<user_id>", methods=["PUT"])
+@require_auth(required_role=UserRole.OPERATIONS_MANAGER)
+def update_user(user_id):
+    """
+    Update user information (admin/operations manager only)
+    """
+    try:
+        data = request.get_json()
+        
+        user = auth_service.get_user(user_id)
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+        
+        # Update allowed fields
+        if "name" in data:
+            user.full_name = data["name"]
+        if "email" in data:
+            user.email = data["email"]
+        if "role" in data:
+            try:
+                user.role = UserRole(data["role"])
+            except ValueError:
+                return jsonify({"error": "Invalid role"}), 400
+        if "is_active" in data:
+            user.is_active = data["is_active"]
+        
+        # Update user in database
+        auth_service.update_user(user)
+        
+        logger.info(f"User {user.email} updated successfully")
+        
+        return (
+            jsonify(
+                {
+                    "message": "User updated successfully",
+                    "user": {
+                        "uid": user.uid,
+                        "email": user.email,
+                        "name": user.full_name,
+                        "role": user.role.value,
+                        "is_active": user.is_active,
+                        "updated_at": (
+                            user.updated_at.isoformat() if user.updated_at else None
+                        ),
+                    }
+                }
+            ),
+            200,
+        )
+        
+    except Exception as e:
+        logger.error(f"Update user error: {e}")
+        return jsonify({"error": "Failed to update user"}), 500
 
 
 @auth_bp.route("/users/<user_id>/role", methods=["PUT"])
