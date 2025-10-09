@@ -477,11 +477,18 @@
                 
                 if (response.ok) {
                     console.log('✅ User created successfully');
+                    
+                    // Close modal first
+                    closeAddUserModal();
+                    
+                    // Show success message
                     alert('User created successfully!');
                     
-                    // Close modal and reload users
-                    closeAddUserModal();
-                    loadUsers(); // Reload the users list
+                    // Reload users list after a short delay to ensure backend has processed
+                    setTimeout(() => {
+                        console.log('🔄 Refreshing users list after creation...');
+                        loadUsers();
+                    }, 500);
                 } else {
                     const error = await response.json();
                     console.error('❌ Failed to create user:', error);

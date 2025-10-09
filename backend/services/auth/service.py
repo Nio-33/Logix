@@ -22,8 +22,9 @@ class AuthService:
         else:
             self.users_collection = None
         
-        # Development mode storage for profile data
+        # Development mode storage for profile data and users
         self._dev_profile_storage = {}
+        self._dev_users_storage = {}
 
     def get_user(self, user_id: str) -> Optional[User]:
         """
@@ -133,7 +134,10 @@ class AuthService:
         """
         try:
             if not self.users_collection:
-                logger.warning(f"Firestore not available - user {user.email} created in-memory only")
+                logger.warning(f"Firestore not available - user {user.email} created in development mode")
+                # Store in development mode
+                self._dev_users_storage[user.uid] = user
+                logger.info(f"User created in development mode: {user.email}")
                 return user
             
             user_data = user.to_dict()
@@ -174,6 +178,11 @@ class AuthService:
         List users with pagination and optional role filter
         """
         try:
+            if not self.users_collection:
+                logger.warning("Firestore not available - returning development mode users")
+                # Return development mode users (in-memory storage)
+                return self._get_dev_users(role_filter, page, limit)
+
             query = self.users_collection
 
             # Apply role filter if provided
@@ -205,6 +214,33 @@ class AuthService:
         except Exception as e:
             logger.error(f"Failed to list users: {e}")
             raise
+    
+    def _get_dev_users(self, role_filter: str = None, page: int = 1, limit: int = 20) -> List[User]:
+        """
+        Get users from development mode storage
+        """
+        try:
+            # Get all users from development storage
+            users = list(self._dev_users_storage.values())
+            
+            # Apply role filter if provided
+            if role_filter:
+                try:
+                    role_enum = UserRole(role_filter)
+                    users = [u for u in users if u.role == role_enum]
+                except ValueError:
+                    logger.warning(f"Invalid role filter: {role_filter}")
+            
+            # Sort by created_at descending
+            users.sort(key=lambda u: u.created_at or datetime.now(timezone.utc), reverse=True)
+            
+            # Apply pagination
+            offset = (page - 1) * limit
+            return users[offset:offset + limit]
+            
+        except Exception as e:
+            logger.error(f"Failed to get dev users: {e}")
+            return []
 
     def search_users(self, search_term: str, limit: int = 10) -> List[User]:
         """
