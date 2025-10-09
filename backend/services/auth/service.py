@@ -139,6 +139,10 @@ class AuthService:
         Create new user in Firestore
         """
         try:
+            # Check email uniqueness first
+            if self._email_exists(user.email):
+                raise ValueError(f"Email {user.email} is already registered")
+            
             if not self.users_collection:
                 logger.warning(f"Firestore not available - user {user.email} created in development mode")
                 # Store in development mode
@@ -251,6 +255,37 @@ class AuthService:
         except Exception as e:
             logger.error(f"Failed to get dev users: {e}")
             return []
+    
+    def _email_exists(self, email: str, exclude_user_id: str = None) -> bool:
+        """
+        Check if email already exists in the system (case-insensitive)
+        """
+        try:
+            email_lower = email.lower().strip()
+            
+            if not self.users_collection:
+                # Check in development storage
+                for user_id, user in self._dev_users_storage.items():
+                    if exclude_user_id and user_id == exclude_user_id:
+                        continue
+                    if user.email.lower().strip() == email_lower:
+                        return True
+                return False
+            
+            # Check in Firestore
+            query = self.users_collection.where("email", "==", email_lower)
+            docs = query.stream()
+            
+            for doc in docs:
+                if exclude_user_id and doc.id == exclude_user_id:
+                    continue
+                return True
+            
+            return False
+            
+        except Exception as e:
+            logger.error(f"Failed to check email existence: {e}")
+            return False
 
     def search_users(self, search_term: str, limit: int = 10) -> List[User]:
         """

@@ -386,6 +386,12 @@ def create_user():
             201,
         )
         
+    except ValueError as e:
+        # Handle email uniqueness errors
+        if "already registered" in str(e):
+            return jsonify({"error": str(e)}), 400
+        logger.error(f"Create user validation error: {e}")
+        return jsonify({"error": str(e)}), 400
     except Exception as e:
         logger.error(f"Create user error: {e}")
         return jsonify({"error": "Failed to create user"}), 500
@@ -456,6 +462,9 @@ def update_user(user_id):
         if "name" in data:
             user.full_name = data["name"]
         if "email" in data:
+            # Check email uniqueness (excluding current user)
+            if auth_service._email_exists(data["email"], exclude_user_id=user_id):
+                return jsonify({"error": "Email is already registered by another user"}), 400
             user.email = data["email"]
         if "role" in data:
             try:
