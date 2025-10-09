@@ -19,6 +19,7 @@ from services.inventory.routes import inventory_bp
 from services.order.routes import order_bp
 from services.route.routes import route_bp
 from services.analytics.routes import analytics_bp
+from services.integrations.woocommerce.routes import woocommerce_bp
 
 # Load environment variables
 load_dotenv()
@@ -193,6 +194,7 @@ def create_app(config_name="development"):
     app.register_blueprint(order_bp, url_prefix="/api/v1/orders")
     app.register_blueprint(route_bp, url_prefix="/api/v1/routes")
     app.register_blueprint(analytics_bp, url_prefix="/api/v1/analytics")
+    app.register_blueprint(woocommerce_bp, url_prefix="/api/v1/woocommerce")
 
     # Health check endpoint
     @app.route("/health")
