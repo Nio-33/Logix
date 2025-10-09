@@ -225,7 +225,47 @@
 
 <script>
   // Route search functionality
+  // Load routes from backend API
+  async function loadRoutes() {
+    console.log('🗺️ Loading routes from backend API...');
+    try {
+      const response = await window.authGuard.fetch('/api/v1/routes/active', {
+        method: 'GET'
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to load routes');
+      }
+      
+      const data = await response.json();
+      console.log('✅ Routes loaded from API:', data);
+      
+      // Display routes on the map/list
+      displayRoutes(data.routes || []);
+      
+    } catch (error) {
+      console.error('❌ Failed to load routes:', error);
+      console.log('📝 No backend route data available - map view is placeholder');
+    }
+  }
+  
+  function displayRoutes(routes) {
+    if (routes.length === 0) {
+      console.log('📍 No active routes found');
+      return;
+    }
+    
+    console.log(`📍 Displaying ${routes.length} routes on map`);
+    // This would integrate with Google Maps or Mapbox to show routes
+    // For now, just log the routes
+    routes.forEach(route => {
+      console.log(`Route ${route.route_id}: Driver ${route.driver_id}, ${route.stops?.length || 0} stops, Status: ${route.status}`);
+    });
+  }
+
   document.addEventListener('DOMContentLoaded', function() {
+    // Load routes on page load
+    loadRoutes();
     const routeSearchInput = document.querySelector('input[placeholder="Search routes"]');
     const locationSearchInput = document.querySelector('input[placeholder="Search location"]');
     
