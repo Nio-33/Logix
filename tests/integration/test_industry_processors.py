@@ -82,8 +82,8 @@ class TestEcommerceProcessor:
         
         processed_order = processor.process(order)
         
-        assert processed_order.industry_category == IndustryCategory.ECOMMERCE
-        assert processed_order.priority == Priority.HIGH  # VIP customer gets high priority
+        assert processed_order.industry_category.value == IndustryCategory.ECOMMERCE.value
+        assert processed_order.priority.value == Priority.HIGH.value  # VIP customer gets high priority
     
     def test_calculate_fulfillment_time(self):
         """Test e-commerce fulfillment time calculation"""
@@ -187,7 +187,7 @@ class TestFoodDeliveryProcessor:
         
         processed_order = processor.process(order)
         
-        assert processed_order.priority == Priority.HIGH
+        assert processed_order.priority.value == Priority.HIGH.value
         assert processed_order.estimated_delivery_date is not None
     
     def test_food_delivery_time_calculation(self):
@@ -229,6 +229,7 @@ class TestProcessorFactory:
         """Test factory returns correct processor for retail"""
         processor = IndustryOrderProcessorFactory.get_processor(IndustryCategory.RETAIL)
         assert isinstance(processor, RetailOrderProcessor)
+        assert processor.industry_category == IndustryCategory.RETAIL
     
     def test_get_processor_for_order_type(self):
         """Test factory can determine processor from order type"""
@@ -236,6 +237,7 @@ class TestProcessorFactory:
             OrderType.FOOD_DELIVERY_CUSTOMER
         )
         assert isinstance(processor, FoodDeliveryOrderProcessor)
+        assert processor.industry_category == IndustryCategory.FOOD_DELIVERY
 
 
 if __name__ == "__main__":

@@ -446,6 +446,51 @@ class ThirdPartyOrderProcessor(BaseIndustryProcessor):
         return 240  # Default 4 hours
 
 
+class ManufacturingOrderProcessor(BaseIndustryProcessor):
+    """Manufacturing order processing logic"""
+    
+    def __init__(self):
+        super().__init__(IndustryCategory.MANUFACTURING)
+    
+    def validate(self, order_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Validate manufacturing order data"""
+        errors = []
+        warnings = []
+        
+        if not order_data.get('manufacturing_data'):
+            errors.append("Manufacturing orders require manufacturing_data")
+            return {"valid": False, "errors": errors, "warnings": warnings}
+        
+        mfg_data = order_data['manufacturing_data']
+        
+        if not mfg_data.get('production_order_id'):
+            errors.append("production_order_id is required")
+        
+        return {
+            "valid": len(errors) == 0,
+            "errors": errors,
+            "warnings": warnings
+        }
+    
+    def process(self, order: Order) -> Order:
+        """Process manufacturing order"""
+        logger.info(f"Processing manufacturing order: {order.order_id}")
+        
+        order.industry_category = IndustryCategory.MANUFACTURING
+        
+        from shared.models.order import Priority
+        order.priority = Priority.HIGH
+        
+        if not order.status or order.status == OrderStatus.PENDING:
+            order.status = IndustryStatusWorkflow.get_initial_status(order.order_type)
+        
+        return order
+    
+    def calculate_fulfillment_time(self, order: Order) -> int:
+        """Calculate estimated fulfillment time for manufacturing order"""
+        return 1440  # 24 hours default
+
+
 class IndustryOrderProcessorFactory:
     """Factory for creating industry-specific processors"""
     
