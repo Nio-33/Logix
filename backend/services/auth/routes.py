@@ -460,7 +460,10 @@ def update_user(user_id):
         
         # Update allowed fields
         if "name" in data:
-            user.full_name = data["name"]
+            # Parse name into first_name and last_name
+            name_parts = data["name"].strip().split(" ", 1) if data["name"] else ["", ""]
+            user.first_name = name_parts[0] if len(name_parts) > 0 else ""
+            user.last_name = name_parts[1] if len(name_parts) > 1 else ""
         if "email" in data:
             # Check email uniqueness (excluding current user)
             if auth_service._email_exists(data["email"], exclude_user_id=user_id):
