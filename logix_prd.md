@@ -1,4 +1,4 @@
-# Logix - Product Requirements Document (PRD)
+r# Logix - Product Requirements Document (PRD)
 
 **Version:** 1.0  
 **Date:** September 2025  
