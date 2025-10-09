@@ -208,10 +208,10 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Role</label>
                         <select id="userRole" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white" required>
-                            <option value="admin">Admin</option>
-                            <option value="manager">Manager</option>
+                            <option value="super_admin">Super Admin</option>
+                            <option value="operations_manager">Operations Manager</option>
+                            <option value="warehouse_staff">Warehouse Staff</option>
                             <option value="driver">Driver</option>
-                            <option value="warehouse">Warehouse Staff</option>
                             <option value="customer">Customer</option>
                         </select>
                     </div>
@@ -242,10 +242,11 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Role</label>
                         <select id="editUserRole" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white" required>
-                            <option value="admin">Admin</option>
-                            <option value="manager">Manager</option>
+                            <option value="super_admin">Super Admin</option>
+                            <option value="operations_manager">Operations Manager</option>
+                            <option value="warehouse_staff">Warehouse Staff</option>
                             <option value="driver">Driver</option>
-                            <option value="warehouse">Warehouse Staff</option>
+                            <option value="customer">Customer</option>
                         </select>
                     </div>
                     <div>
@@ -388,9 +389,14 @@
         // Get role color
         function getRoleColor(role) {
             switch(role) {
-                case 'admin': return 'bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-400';
-                case 'manager': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-400';
+                case 'super_admin': return 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-400';
+                case 'operations_manager': return 'bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-400';
+                case 'warehouse_staff': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-400';
                 case 'driver': return 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400';
+                case 'customer': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-400';
+                // Legacy role support
+                case 'admin': return 'bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-400';
+                case 'manager': return 'bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-400';
                 case 'warehouse': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-400';
                 default: return 'bg-gray-100 text-gray-800 dark:bg-gray-900/50 dark:text-gray-400';
             }
