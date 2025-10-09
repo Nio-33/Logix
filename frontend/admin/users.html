@@ -610,9 +610,12 @@
         // Edit user function
         function editUser(userId) {
             console.log('✏️ Editing user:', userId);
+            console.log('👥 Available users:', users);
+            console.log('🔍 Looking for user with ID:', userId);
             
             // Find the user in the current users array
             const user = users.find(u => (u.uid || u.id) == userId);
+            console.log('✅ Found user:', user);
             
             if (!user) {
                 alert('User not found');
@@ -625,6 +628,14 @@
             document.getElementById('editUserEmail').value = user.email;
             document.getElementById('editUserRole').value = user.role;
             document.getElementById('editUserStatus').value = user.status;
+            
+            console.log('📝 Form populated with:', {
+                id: userId,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                status: user.status
+            });
             
             // Show the edit modal
             openEditUserModal();

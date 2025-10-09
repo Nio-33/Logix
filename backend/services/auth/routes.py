@@ -442,9 +442,15 @@ def update_user(user_id):
     try:
         data = request.get_json()
         
+        logger.info(f"Update user request - user_id: {user_id}, data: {data}")
+        logger.info(f"Development storage users: {list(auth_service._dev_users_storage.keys())}")
+        
         user = auth_service.get_user(user_id)
         if not user:
+            logger.error(f"User {user_id} not found in storage")
             return jsonify({"error": "User not found"}), 404
+        
+        logger.info(f"Found user: {user.email}, role: {user.role}")
         
         # Update allowed fields
         if "name" in data:
