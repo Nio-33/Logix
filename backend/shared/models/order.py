@@ -8,6 +8,16 @@ from dataclasses import dataclass, asdict
 from typing import Optional, Dict, Any, List
 from decimal import Decimal
 
+# Import industry-specific types
+from .industry_types import OrderType, OrderSource, IndustryCategory
+from .industry_data import (
+    EcommerceOrderData,
+    RetailOrderData,
+    FoodDeliveryOrderData,
+    ManufacturingOrderData,
+    ThirdPartyOrderData,
+)
+
 
 class OrderStatus(Enum):
     """Order status enumeration"""
@@ -15,6 +25,8 @@ class OrderStatus(Enum):
     PENDING = "pending"
     CONFIRMED = "confirmed"
     PROCESSING = "processing"
+    
+    # E-commerce & General statuses
     PICKED = "picked"
     PACKED = "packed"
     SHIPPED = "shipped"
@@ -22,6 +34,26 @@ class OrderStatus(Enum):
     DELIVERED = "delivered"
     CANCELLED = "cancelled"
     RETURNED = "returned"
+    
+    # Retail-specific statuses
+    INSPECTED = "inspected"
+    APPROVED = "approved"
+    RECEIVED = "received"
+    INVENTORIED = "inventoried"
+    
+    # Food delivery-specific statuses
+    PREPARING = "preparing"
+    READY_FOR_PICKUP = "ready_for_pickup"
+    PICKED_UP = "picked_up"
+    
+    # Manufacturing-specific statuses
+    MATERIALS_ALLOCATED = "materials_allocated"
+    PRODUCTION_STARTED = "production_started"
+    PRODUCTION_IN_PROGRESS = "production_in_progress"
+    PRODUCTION_COMPLETED = "production_completed"
+    QUALITY_CHECKED = "quality_checked"
+    QUALITY_FAILED = "quality_failed"
+    PACKAGED = "packaged"
 
 
 class PaymentStatus(Enum):
@@ -77,12 +109,17 @@ class OrderItem:
 
 @dataclass
 class Order:
-    """Order model"""
+    """Enhanced order model with industry-specific support"""
 
     order_id: str
     customer_id: str
     status: OrderStatus = OrderStatus.PENDING
     priority: Priority = Priority.NORMAL
+
+    # Industry Classification (NEW)
+    order_type: Optional[OrderType] = None
+    order_source: Optional[OrderSource] = OrderSource.WEB
+    industry_category: Optional[IndustryCategory] = None
 
     # Order details
     items: List[OrderItem] = None
@@ -110,8 +147,15 @@ class Order:
     route_id: Optional[str] = None
     tracking_number: Optional[str] = None
 
+    # Industry-Specific Data (NEW - Conditional based on order_type)
+    ecommerce_data: Optional[EcommerceOrderData] = None
+    retail_data: Optional[RetailOrderData] = None
+    food_delivery_data: Optional[FoodDeliveryOrderData] = None
+    manufacturing_data: Optional[ManufacturingOrderData] = None
+    third_party_data: Optional[ThirdPartyOrderData] = None
+
     # Metadata
-    source: str = "web"  # web, mobile, api, phone
+    source: str = "web"  # Deprecated: Use order_source instead
     notes: Optional[str] = None
     tags: Optional[List[str]] = None
     created_at: Optional[datetime] = None
@@ -170,6 +214,14 @@ class Order:
         data["status"] = self.status.value
         data["priority"] = self.priority.value
         data["payment_status"] = self.payment_status.value
+        
+        # Convert industry enums to strings (NEW)
+        if self.order_type:
+            data["order_type"] = self.order_type.value
+        if self.order_source:
+            data["order_source"] = self.order_source.value
+        if self.industry_category:
+            data["industry_category"] = self.industry_category.value
 
         # Convert Decimal to float
         for field in [
@@ -185,6 +237,18 @@ class Order:
         # Convert items
         if self.items:
             data["items"] = [item.to_dict() for item in self.items]
+        
+        # Convert industry-specific data (NEW)
+        if self.ecommerce_data:
+            data["ecommerce_data"] = self.ecommerce_data.to_dict()
+        if self.retail_data:
+            data["retail_data"] = self.retail_data.to_dict()
+        if self.food_delivery_data:
+            data["food_delivery_data"] = self.food_delivery_data.to_dict()
+        if self.manufacturing_data:
+            data["manufacturing_data"] = self.manufacturing_data.to_dict()
+        if self.third_party_data:
+            data["third_party_data"] = self.third_party_data.to_dict()
 
         # Convert datetime objects to timestamps
         datetime_fields = [
@@ -212,6 +276,14 @@ class Order:
             data["priority"] = Priority(data["priority"])
         if "payment_status" in data:
             data["payment_status"] = PaymentStatus(data["payment_status"])
+        
+        # Convert industry enums (NEW)
+        if data.get("order_type"):
+            data["order_type"] = OrderType(data["order_type"])
+        if data.get("order_source"):
+            data["order_source"] = OrderSource(data["order_source"])
+        if data.get("industry_category"):
+            data["industry_category"] = IndustryCategory(data["industry_category"])
 
         # Convert Decimal fields
         decimal_fields = [
@@ -230,6 +302,18 @@ class Order:
             data["items"] = [
                 OrderItem.from_dict(item_data) for item_data in data["items"]
             ]
+        
+        # Convert industry-specific data (NEW)
+        if data.get("ecommerce_data"):
+            data["ecommerce_data"] = EcommerceOrderData.from_dict(data["ecommerce_data"])
+        if data.get("retail_data"):
+            data["retail_data"] = RetailOrderData.from_dict(data["retail_data"])
+        if data.get("food_delivery_data"):
+            data["food_delivery_data"] = FoodDeliveryOrderData.from_dict(data["food_delivery_data"])
+        if data.get("manufacturing_data"):
+            data["manufacturing_data"] = ManufacturingOrderData.from_dict(data["manufacturing_data"])
+        if data.get("third_party_data"):
+            data["third_party_data"] = ThirdPartyOrderData.from_dict(data["third_party_data"])
 
         # Convert datetime fields
         datetime_fields = [
@@ -278,3 +362,109 @@ class Order:
             OrderStatus.PROCESSING,
         ]
         return self.status in cancellable_statuses
+    
+    # ==================== Industry-Specific Methods (NEW) ====================
+    
+    def get_industry_display_name(self) -> str:
+        """Get human-readable industry category name"""
+        if not self.industry_category:
+            return "General"
+        
+        industry_names = {
+            IndustryCategory.ECOMMERCE: "E-commerce",
+            IndustryCategory.RETAIL: "Retail Distribution",
+            IndustryCategory.FOOD_DELIVERY: "Food Delivery",
+            IndustryCategory.MANUFACTURING: "Manufacturing",
+            IndustryCategory.THIRD_PARTY_LOGISTICS: "3PL Services",
+        }
+        return industry_names.get(self.industry_category, "General")
+    
+    def get_order_type_display_name(self) -> str:
+        """Get human-readable order type name"""
+        if not self.order_type:
+            return "Standard Order"
+        
+        type_names = {
+            OrderType.ECOMMERCE_DIRECT: "Direct E-commerce",
+            OrderType.ECOMMERCE_MARKETPLACE: "Marketplace Order",
+            OrderType.ECOMMERCE_SUBSCRIPTION: "Subscription Order",
+            OrderType.RETAIL_PURCHASE_ORDER: "Purchase Order",
+            OrderType.RETAIL_TRANSFER: "Store Transfer",
+            OrderType.RETAIL_RESTOCK: "Restocking Order",
+            OrderType.FOOD_DELIVERY_CUSTOMER: "Food Delivery",
+            OrderType.FOOD_DELIVERY_CATERING: "Catering Order",
+            OrderType.FOOD_DELIVERY_GROCERY: "Grocery Delivery",
+            OrderType.MANUFACTURING_PRODUCTION: "Production Order",
+            OrderType.MANUFACTURING_RAW_MATERIALS: "Raw Materials",
+            OrderType.MANUFACTURING_FINISHED_GOODS: "Finished Goods",
+            OrderType.THIRD_PARTY_FULFILLMENT: "3PL Fulfillment",
+            OrderType.THIRD_PARTY_STORAGE: "3PL Storage",
+            OrderType.THIRD_PARTY_CROSS_DOCK: "Cross-Dock",
+        }
+        return type_names.get(self.order_type, "Standard Order")
+    
+    def get_industry_specific_data(self) -> Optional[Any]:
+        """Get the populated industry-specific data object"""
+        if self.ecommerce_data:
+            return self.ecommerce_data
+        elif self.retail_data:
+            return self.retail_data
+        elif self.food_delivery_data:
+            return self.food_delivery_data
+        elif self.manufacturing_data:
+            return self.manufacturing_data
+        elif self.third_party_data:
+            return self.third_party_data
+        return None
+    
+    def has_industry_data(self) -> bool:
+        """Check if order has industry-specific data"""
+        return self.get_industry_specific_data() is not None
+    
+    @property
+    def is_time_sensitive(self) -> bool:
+        """Check if order has time-sensitive delivery requirements"""
+        # Food delivery orders are always time-sensitive
+        if self.industry_category == IndustryCategory.FOOD_DELIVERY:
+            return True
+        
+        # Manufacturing with production schedules
+        if self.industry_category == IndustryCategory.MANUFACTURING:
+            if self.manufacturing_data and self.manufacturing_data.production_start_date:
+                return True
+        
+        # Check if has narrow delivery window
+        if self.requested_delivery_date and self.estimated_delivery_date:
+            time_diff = abs((self.estimated_delivery_date - self.requested_delivery_date).total_seconds())
+            return time_diff < 7200  # Less than 2 hours window
+        
+        return False
+    
+    @property
+    def requires_special_handling(self) -> bool:
+        """Check if order requires special handling"""
+        # Food safety requirements
+        if self.food_delivery_data:
+            if self.food_delivery_data.temperature_requirements:
+                return True
+            if self.food_delivery_data.allergen_info:
+                return True
+        
+        # Retail compliance requirements
+        if self.retail_data:
+            if self.retail_data.hazmat_classification:
+                return True
+            if self.retail_data.inspection_required:
+                return True
+        
+        # Manufacturing quality control
+        if self.manufacturing_data:
+            if self.manufacturing_data.quality_control_points:
+                return True
+        
+        # 3PL special handling
+        if self.third_party_data:
+            if self.third_party_data.special_handling_required:
+                return True
+        
+        return False

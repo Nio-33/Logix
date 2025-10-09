@@ -96,13 +96,22 @@
 }
 ```
 
-### 5. Orders Collection (`orders`)
+### 5. Orders Collection (`orders`) - ENHANCED v2.0
 ```javascript
 {
   order_id: string,              // Document ID
   customer_id: string,
-  status: enum,                  // pending, confirmed, processing, picked, packed, shipped, out_for_delivery, delivered, cancelled, returned
+  status: enum,                  // Extended: pending, confirmed, processing, picked, packed, shipped, 
+                                 // out_for_delivery, delivered, cancelled, returned, inspected, approved,
+                                 // received, inventoried, preparing, ready_for_pickup, picked_up,
+                                 // materials_allocated, production_started, quality_checked, etc.
   priority: enum,                // low, normal, high, urgent
+  
+  // NEW: Industry Classification
+  order_type: enum?,             // ecommerce_direct, retail_po, food_delivery_customer, 
+                                 // manufacturing_production, 3pl_fulfillment, etc.
+  order_source: enum?,           // shopify, edi_system, uber_eats, erp_system, client_portal, etc.
+  industry_category: enum?,      // ecommerce, retail, food_delivery, manufacturing, 3pl
   
   // Order details
   items: array<{
@@ -148,8 +157,65 @@
   route_id: string?,
   tracking_number: string?,
   
+  // NEW: Industry-Specific Data (Conditional)
+  ecommerce_data: {              // Present only for e-commerce orders
+    platform_order_id: string,
+    platform_name: string,
+    customer_email: string,
+    customer_segment: string?,
+    campaign_id: string?,
+    utm_source: string?,
+    subscription_id: string?,
+    is_subscription: boolean,
+    return_policy_days: number?,
+    // ... additional e-commerce fields
+  }?,
+  
+  retail_data: {                 // Present only for retail orders
+    po_number: string,
+    vendor_id: string,
+    vendor_name: string,
+    payment_terms: string,
+    delivery_terms: string,
+    compliance_certifications: array<string>?,
+    inspection_required: boolean,
+    quality_standards: array<string>?,
+    // ... additional retail fields
+  }?,
+  
+  food_delivery_data: {          // Present only for food delivery orders
+    restaurant_id: string,
+    restaurant_name: string,
+    customer_phone: string,
+    preparation_time_minutes: number,
+    temperature_requirements: string?,
+    allergen_info: array<string>?,
+    platform_fee: number?,
+    // ... additional food delivery fields
+  }?,
+  
+  manufacturing_data: {          // Present only for manufacturing orders
+    production_order_id: string,
+    work_order_id: string?,
+    production_start_date: timestamp?,
+    production_end_date: timestamp?,
+    quality_control_points: array<string>?,
+    certification_requirements: array<string>?,
+    // ... additional manufacturing fields
+  }?,
+  
+  third_party_data: {            // Present only for 3PL orders
+    client_id: string,
+    client_name: string,
+    service_type: string,
+    billing_model: string,
+    sla_delivery_time: number?,
+    white_label: boolean,
+    // ... additional 3PL fields
+  }?,
+  
   // Metadata
-  source: string,                // web, mobile, api, phone
+  source: string,                // DEPRECATED: Use order_source instead
   notes: string?,
   tags: array<string>?,
   created_at: timestamp,
@@ -398,6 +464,45 @@ service cloud.firestore {
   fields: [
     { field: "customer_id", mode: "ASCENDING" },
     { field: "status", mode: "ASCENDING" },
+    { field: "created_at", mode: "DESCENDING" }
+  ]
+}
+
+// NEW: Orders by industry category and status
+{
+  collection: "orders",
+  fields: [
+    { field: "industry_category", mode: "ASCENDING" },
+    { field: "status", mode: "ASCENDING" },
+    { field: "created_at", mode: "DESCENDING" }
+  ]
+}
+
+// NEW: Orders by order type and status
+{
+  collection: "orders",
+  fields: [
+    { field: "order_type", mode: "ASCENDING" },
+    { field: "status", mode: "ASCENDING" },
+    { field: "created_at", mode: "DESCENDING" }
+  ]
+}
+
+// NEW: Orders by order source and created date
+{
+  collection: "orders",
+  fields: [
+    { field: "order_source", mode: "ASCENDING" },
+    { field: "created_at", mode: "DESCENDING" }
+  ]
+}
+
+// NEW: Orders by industry and priority
+{
+  collection: "orders",
+  fields: [
+    { field: "industry_category", mode: "ASCENDING" },
+    { field: "priority", mode: "ASCENDING" },
     { field: "created_at", mode: "DESCENDING" }
   ]
 }
