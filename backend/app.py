@@ -462,7 +462,7 @@ def create_app(config_name="development"):
     # Serve shared utility files
     @app.route("/shared/utils/<path:filename>")
     def serve_shared_utils(filename):
-        """Serve shared utility files"""
+        """Serve shared utility files (JavaScript, CSS, etc.)"""
         try:
             import os
 
@@ -473,8 +473,14 @@ def create_app(config_name="development"):
                 "utils",
                 filename,
             )
+            
+            # Determine content type
+            content_type = "application/javascript"
+            if filename.endswith('.css'):
+                content_type = "text/css"
+            
             with open(utils_path, "r") as f:
-                return f.read(), 200, {"Content-Type": "application/javascript"}
+                return f.read(), 200, {"Content-Type": content_type}
         except Exception as e:
             return (
                 f"// Error loading {filename}: {e}",

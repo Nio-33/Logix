@@ -214,13 +214,22 @@
     return `<span class="px-2 py-1 text-xs font-semibold rounded-full ${cls}">${status[0].toUpperCase()+status.slice(1)}</span>`;
   }
   async function loadOrders(){
+    console.log('📦 Loading orders from backend API...');
     try{
       const params=new URLSearchParams();
       const s=document.getElementById('status-filter').value; if(s) params.set('status',s);
-      const sd=document.getElementById('start-date').value; if(sd) params.set('start',sd);
-      const ed=document.getElementById('end-date').value; if(ed) params.set('end',ed);
-      const res=await fetch('/api/v1/orders'+(params.toString()?`?${params.toString()}`:''));
+      const sd=document.getElementById('start-date').value; if(sd) params.set('start_date',sd);
+      const ed=document.getElementById('end-date').value; if(ed) params.set('end_date',ed);
+      
+      // Use authGuard for authenticated API requests
+      const res = await window.authGuard.fetch('/api/v1/orders'+(params.toString()?`?${params.toString()}`:''), {
+        method: 'GET'
+      });
+      
+      if(!res.ok) throw new Error('Failed to load orders');
+      
       const data=await res.json();
+      console.log('✅ Orders loaded:', data);
       const rows=(data.orders||[]).map(o=>`<tr class="hover:bg-gray-50 dark:hover:bg-gray-900/20 transition-colors">
         <td class="p-4 whitespace-nowrap font-mono text-sm">${o.order_id}</td>
         <td class="p-4 whitespace-nowrap">${o.customer_name}</td>
@@ -228,16 +237,18 @@
         <td class="p-4 whitespace-nowrap">$${Number(o.total_amount).toFixed(2)}</td>
         <td class="p-4 whitespace-nowrap">${(o.created_at||'').split('T')[0]}</td>
         <td class="p-4 whitespace-nowrap space-x-2">
-          <button class="p-1.5 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+          <button onclick="viewOrder('${o.order_id}')" class="p-1.5 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors" title="View order details">
             <span class="material-symbols-outlined text-base">visibility</span>
           </button>
-          <button class="p-1.5 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+          <button onclick="editOrder('${o.order_id}')" class="p-1.5 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors" title="Edit order">
             <span class="material-symbols-outlined text-base">edit</span>
           </button>
         </td>
       </tr>`).join('');
-      document.getElementById('orders-body').innerHTML=rows||'<tr><td class="p-4" colspan="6">No orders found</td></tr>';
+      document.getElementById('orders-body').innerHTML=rows.length > 0 ? rows : '<tr><td class="p-4 text-center text-gray-500 dark:text-gray-400" colspan="6">No orders found. Click "New Order" to create your first order.</td></tr>';
     }catch(e){
+      console.error('❌ Failed to load orders:', e);
+      console.log('📝 Showing demo data as fallback');
       // fallback demo rows align with screenshot if API fails
       document.getElementById('orders-body').innerHTML=`
       <tr class="hover:bg-gray-50 dark:hover:bg-gray-900/20 transition-colors"><td class="p-4 whitespace-nowrap font-mono text-sm">#10254</td><td class="p-4 whitespace-nowrap">John Doe</td><td class="p-4 whitespace-nowrap">${statusBadge('pending')}</td><td class="p-4 whitespace-nowrap">$150.00</td><td class="p-4 whitespace-nowrap">2023-10-27</td><td class="p-4 whitespace-nowrap space-x-2"><button class="p-1.5 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"><span class="material-symbols-outlined text-base">visibility</span></button><button class="p-1.5 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"><span class="material-symbols-outlined text-base">edit</span></button></td></tr>
@@ -247,6 +258,19 @@
       <tr class="hover:bg-gray-50 dark:hover:bg-gray-900/20 transition-colors"><td class="p-4 whitespace-nowrap font-mono text-sm">#10250</td><td class="p-4 whitespace-nowrap">Chris Lee</td><td class="p-4 whitespace-nowrap">${statusBadge('delivered')}</td><td class="p-4 whitespace-nowrap">$300.75</td><td class="p-4 whitespace-nowrap">2023-10-24</td><td class="p-4 whitespace-nowrap space-x-2"><button class="p-1.5 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"><span class="material-symbols-outlined text-base">visibility</span></button><button class="p-1.5 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"><span class="material-symbols-outlined text-base">edit</span></button></td></tr>`;
     }
   }
+  
+  // View order details
+  function viewOrder(orderId) {
+    console.log('👁️ Viewing order:', orderId);
+    alert(`View order details for ${orderId}\n\nThis would open a modal with full order information including:\n- Order items\n- Customer details\n- Delivery address\n- Status history`);
+  }
+
+  // Edit order
+  function editOrder(orderId) {
+    console.log('✏️ Editing order:', orderId);
+    alert(`Edit order ${orderId}\n\nThis would open an edit modal to modify:\n- Order status\n- Delivery address\n- Order items\n- Notes`);
+  }
+  
   document.getElementById('search-btn').addEventListener('click', loadOrders);
   window.addEventListener('DOMContentLoaded', loadOrders);
 
@@ -265,6 +289,7 @@
     }
   });
 </script>
+<script src="/shared/utils/auth-guard.js"></script>
 <script src="/shared/utils/theme-manager.js"></script>
 
 </body></html>
