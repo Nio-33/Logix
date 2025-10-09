@@ -209,13 +209,20 @@
   }
   function currency(v){try{return new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(Number(v||0));}catch(e){return `$${Number(v||0).toFixed(2)}`}}
   async function loadInventory(){
+    console.log('📦 Loading inventory from backend API...');
     try{
       const [listRes, lowRes]=await Promise.all([
-        fetch('/api/v1/inventory'),
-        fetch('/api/v1/inventory/low-stock')
+        window.authGuard.fetch('/api/v1/inventory', { method: 'GET' }),
+        window.authGuard.fetch('/api/v1/inventory/low-stock', { method: 'GET' })
       ]);
+      
+      if (!listRes.ok || !lowRes.ok) {
+        throw new Error('Failed to load inventory data');
+      }
+      
       const list=await listRes.json();
       const low=await lowRes.json();
+      console.log('✅ Inventory loaded from API:', { items: list.inventory?.length, lowStock: low.low_stock_items?.length });
       const items=list.inventory||[];
       document.getElementById('metric-total-products').textContent = items.length.toLocaleString();
       const totalValue = items.reduce((s,i)=>s+Number(i.total_value||0),0);
@@ -234,10 +241,12 @@
         <td class="px-6 py-4">${i.warehouse_name||''}</td>
         <td class="px-6 py-4">${i.quantity_available} / ${i.quantity_on_hand}</td>
         <td class="px-6 py-4">${statusBadge((i.status||'available'))}</td>
-        <td class="px-6 py-4 space-x-2"><button class="text-primary hover:underline">Adjust</button><button class="text-gray-500 hover:underline">View</button></td>
+        <td class="px-6 py-4 space-x-2"><button onclick="adjustStock('${i.sku}')" class="text-primary hover:underline" title="Adjust stock levels">Adjust</button><button onclick="viewProduct('${i.sku}')" class="text-gray-500 hover:underline" title="View product details">View</button></td>
       </tr>`).join('');
       document.getElementById('inventory-body').innerHTML = rows || '<tr><td class="px-6 py-4" colspan="6">No items</td></tr>';
     }catch(e){
+      console.error('❌ Failed to load inventory:', e);
+      console.log('📝 Showing demo data as fallback');
       // fallback static content
       document.getElementById('metric-total-products').textContent='2,453';
       document.getElementById('metric-total-value').textContent='$1,250,890.50';
@@ -253,6 +262,19 @@
       <tr class="bg-white dark:bg-gray-800/50"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">SKU-01213</td><td class="px-6 py-4">Laptop Stand</td><td class="px-6 py-4">Warehouse B</td><td class="px-6 py-4">15 / 20</td><td class="px-6 py-4">${statusBadge('available')}</td><td class="px-6 py-4 space-x-2"><button class="text-primary hover:underline">Adjust</button><button class="text-gray-500 hover:underline">View</button></td></tr>`;
     }
   }
+  
+  // Adjust stock function
+  function adjustStock(sku) {
+    console.log('📊 Adjusting stock for SKU:', sku);
+    alert(`Adjust stock for ${sku}\n\nThis would open a modal to:\n- Add stock (receiving)\n- Remove stock (shipping/damage)\n- Transfer between warehouses\n- View stock history`);
+  }
+  
+  // View product details
+  function viewProduct(sku) {
+    console.log('👁️ Viewing product:', sku);
+    alert(`View product details for ${sku}\n\nThis would show:\n- Product information\n- Stock levels across warehouses\n- Movement history\n- Reorder information`);
+  }
+  
   window.addEventListener('DOMContentLoaded', loadInventory);
 
   function toggleNotifications() {
