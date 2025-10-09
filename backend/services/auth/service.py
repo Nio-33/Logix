@@ -4,7 +4,7 @@ Authentication Service Business Logic
 
 import logging
 from typing import Optional, List, Dict, Any
-from datetime import datetime
+from datetime import datetime, timezone
 
 from shared.utils.firebase_config import get_firestore_client
 from shared.models.user import User, UserRole
@@ -28,11 +28,17 @@ class AuthService:
 
     def get_user(self, user_id: str) -> Optional[User]:
         """
-        Get user by ID from Firestore
+        Get user by ID from Firestore or development storage
         """
         if not self.users_collection:
-            logger.warning("Firestore not available in development mode - returning None")
-            return None
+            logger.warning("Firestore not available - checking development mode storage")
+            # Check development mode storage
+            if user_id in self._dev_users_storage:
+                logger.info(f"User {user_id} found in development storage")
+                return self._dev_users_storage[user_id]
+            else:
+                logger.warning(f"User {user_id} not found in development storage")
+                return None
 
         try:
             user_doc = self.users_collection.document(user_id).get()
@@ -156,10 +162,14 @@ class AuthService:
         """
         try:
             if not self.users_collection:
-                logger.warning(f"Firestore not available - user {user.email} updated in-memory only")
+                logger.warning(f"Firestore not available - user {user.email} updated in development mode")
+                # Update in development mode
+                user.updated_at = datetime.now(timezone.utc)
+                self._dev_users_storage[user.uid] = user
+                logger.info(f"User updated in development mode: {user.email}")
                 return user
             
-            user.updated_at = datetime.utcnow()
+            user.updated_at = datetime.now(timezone.utc)
             user_data = user.to_dict()
 
             self.users_collection.document(user.uid).update(user_data)
